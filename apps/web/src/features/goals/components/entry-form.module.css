@@ -10,6 +10,15 @@
   align-items: start;
 }
 
+/* Below this width, "auto" (the currency select, sized by its widest
+   option like "VND (Đồng Việt Nam)") leaves too little room for the
+   amount field to stay usable — stack instead of squeezing both. */
+@media (max-width: 480px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}
+
 .preview {
   margin: -0.5rem 0 var(--space-field-stack);
   font-size: var(--text-sm);

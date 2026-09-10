@@ -17,6 +17,12 @@
   gap: 0.75rem;
 }
 
+@media (max-width: 420px) {
+  .actionsRow {
+    flex-direction: column;
+  }
+}
+
 .sectionTitle {
   margin: 0 0 1rem;
   font-family: var(--font-heading);

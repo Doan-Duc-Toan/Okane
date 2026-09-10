@@ -3,6 +3,13 @@
   flex-direction: column;
   gap: 0.4rem;
   margin-bottom: var(--space-field-stack);
+  /* A flex/grid item defaults to min-width:auto, which floors its size at
+     its content's intrinsic width — a plain <input>/<select>'s own natural
+     width (~170-200px). That floor wins over a narrower grid track (e.g.
+     entry-form's `1fr auto` row) or flex-wrap, and the PAGE overflows
+     horizontally on a phone instead of the field just shrinking. This is
+     the fix, applied once here rather than on every multi-column row. */
+  min-width: 0;
 }
 
 .label {
