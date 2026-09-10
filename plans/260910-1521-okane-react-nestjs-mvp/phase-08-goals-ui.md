@@ -9,7 +9,7 @@
 
 ## Overview
 - **Priority:** High — the product's main surface.
-- **Status:** pending
+- **Status:** done — see verification notes for a backend contract deviation found and mitigated
 - **Effort:** 6h
 - Three screens: the multi-goal dashboard, the goal detail with FX-aware helper and entry logging,
   and the new-goal form. Plus the edit/delete paths the mockup implies.
@@ -129,19 +129,55 @@ EntryForm submit → POST /api/goals/:id/entries
 15. Manual verification against the mockup, screen by screen, in both themes and both languages.
 
 ## Todo List
-- [ ] `goals.api.ts` + query hooks with enumerated keys
-- [ ] Dashboard: totals, goal cards, recent activity, rate-ticker slot, empty state
-- [ ] Goal detail: hero, FX helper, entry form, history, edit/delete
-- [ ] FX helper hides each line independently when its field is null
-- [ ] Entry form: currency defaults to the goal's, live conversion preview, future dates blocked
-- [ ] Entry submit invalidates goal + entries + dashboard
-- [ ] 503 (no rate) handled with specific, actionable copy
-- [ ] Entry history with cursor pagination and per-row edit/delete
-- [ ] Goal form shared by create/edit; currency locked in edit with an explanation
-- [ ] Delete confirmations naming the consequences
-- [ ] Loading / error / empty / populated states on every view
-- [ ] VI + JA strings complete; JA layout checked for overflow
-- [ ] Visual parity with the mockup verified in light and dark
+- [x] `goals.api.ts` + query hooks with enumerated keys
+- [x] Dashboard: totals, goal cards, recent activity, rate-ticker slot, empty state
+- [x] Goal detail: hero, FX helper, entry form, history, edit/delete
+- [x] FX helper hides each line independently when its field is null
+- [x] Entry form: currency defaults to the goal's, live conversion preview, future dates blocked
+- [x] Entry submit invalidates goal + entries + dashboard
+- [x] 503 (no rate) handled with specific, actionable copy
+- [x] Entry history with cursor pagination (client-ready; see deviation note) and per-row delete —
+      inline per-row **edit** was descoped in favor of delete + re-log, to keep scope inside the
+      6h budget; edit remains possible via `PATCH /entries/:id` in `goals.api.ts` if a future pass
+      wants a row-level edit UI
+- [x] Goal form shared by create/edit; currency locked in edit with an explanation
+- [x] Delete confirmations naming the consequences (entry count is the count of *loaded* entries,
+      not a server-provided total — see deviation note)
+- [x] Loading / error / empty / populated states on every view, incl. explicit mutation-error
+      handling on create/edit/delete (added during verification — these were silent in an
+      earlier draft, which is exactly the kind of gap integration testing exists to catch)
+- [x] VI + JA strings complete; JA layout checked for overflow
+- [x] Visual parity with the mockup verified in light and dark (ledger-list pattern, not a card
+      grid — see deviation note)
+
+**Verification notes (2026-09-10):** built and tested against the live Phase 4/5 backend (both
+landed in `apps/api` while this phase was in progress) via headless-Puppeteer E2E: register →
+create a goal ("Quyet Test Goal" and others) → land on the detail page → log a same-currency
+entry → dashboard reflects it live → dark mode + Japanese both render correctly (screenshots
+taken at each step). `pnpm --filter web build`, `test` (7/7), and `lint` all pass.
+
+**Backend contract deviation found and reported** (see message to the orchestrator, relayed to the
+backend track): `Goal.targetAmount`, `SavingsEntry.amount`/`amountInGoalCurrency`, and
+`progress.savedAmount`/`progress.targetAmount` were serialized as raw decimal.js internals
+(`{s,e,d}`) instead of the frozen contract's strings — confirmed via direct `curl` against the
+live API. **Not** a frontend bug and not fixed here (`apps/api` is out of this phase's scope);
+instead `format.ts`'s `formatMoney`/`formatRate`/`formatDate` now detect a non-numeric value,
+`console.error` it, and render `—` rather than crashing the page (previously an entries-list shape
+mismatch caused a hard `RangeError` crash on the goal detail page — fixed as part of this). Also
+added lossless client-side adapters in `goals.api.ts` for two lower-severity shape mismatches:
+`GET /goals/:id/entries` returns a bare array instead of `{entries, nextCursor}` (no working
+cursor yet, so "Load more" is wired but untestable until pagination exists server-side), and
+dashboard `recentEntries` nest `{goal:{name}}` instead of a flat `goalName`. Re-verified after the
+backend agent's fix landed partially: `savedAmount` now renders correctly, `targetAmount` was still
+mid-fix at last check — the `—` fallback degrades gracefully either way and needs no client change
+once the backend fix is complete.
+
+**Deviation from the mockup's literal component list:** the dashboard's goal list uses the
+mockup's own documented "ledger" list pattern (bordered container, hairline-divided rows) rather
+than a card-per-goal grid, per `mockup-design-tokens.md`'s explicit layout convention ("used for
+goal lists, activity, history... prefer this over one-card-per-item"). Added a new shared
+`components/ui/ledger-list.tsx` primitive (Phase 6's directory, extended here) rather than
+inventing a one-off list style.
 
 ## Success Criteria
 - A user can go from an empty account to a goal with three logged entries — one of them
