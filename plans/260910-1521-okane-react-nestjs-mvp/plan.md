@@ -47,7 +47,7 @@ Context: [brainstorm](../reports/brainstorm-260909-1453-savings-app-idea.md) ·
 | 6 | React app shell (tokens, theme, i18n, routing, API client) | done | 5h | [phase-06-react-app-shell.md](phase-06-react-app-shell.md) |
 | 7 | Auth UI (login, register, session handling) | done | 3h | [phase-07-auth-ui.md](phase-07-auth-ui.md) |
 | 8 | Goals UI (dashboard, goal detail, forms, history) | pending | 6h | [phase-08-goals-ui.md](phase-08-goals-ui.md) |
-| 9 | Exchange & Convert UI (rate, chart, converter, alerts) | pending | 4h | [phase-09-exchange-and-convert-ui.md](phase-09-exchange-and-convert-ui.md) |
+| 9 | Exchange & Convert UI (rate, chart, converter, alerts) | done — backend not yet reachable for a live click-through, see phase notes | 4h | [phase-09-exchange-and-convert-ui.md](phase-09-exchange-and-convert-ui.md) |
 | 10 | Integration, QA & hardening | pending | 2h | [phase-10-integration-qa-and-hardening.md](phase-10-integration-qa-and-hardening.md) |
 
 ## Key dependencies

@@ -7,7 +7,6 @@ import { LedgerList } from '@/components/ui/ledger-list'
 import { Spinner } from '@/components/ui/spinner'
 import { CurrencyTotals } from './components/currency-totals'
 import { GoalCard } from './components/goal-card'
-import { RateTickerPlaceholder } from './components/rate-ticker-placeholder'
 import { RecentActivity } from './components/recent-activity'
 import { useDashboard } from './hooks/use-dashboard'
 import styles from './dashboard-page.module.css'
@@ -18,8 +17,6 @@ export function DashboardPage() {
 
   return (
     <div className={styles.page}>
-      <RateTickerPlaceholder />
-
       {isLoading && <Spinner />}
       {isError && <ErrorState onRetry={() => void refetch()} />}
 

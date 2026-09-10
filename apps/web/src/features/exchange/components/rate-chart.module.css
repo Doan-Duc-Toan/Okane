@@ -1,0 +1,36 @@
+.chartWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.single {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.35rem;
+  padding: var(--space-section-gap) 1rem;
+}
+
+.singleFigure {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.singleCaption {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-ink-soft);
+}
+
+.coverageNote {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-ink-faint);
+  text-align: center;
+}

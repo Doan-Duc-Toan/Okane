@@ -9,7 +9,7 @@
 
 ## Overview
 - **Priority:** High — the differentiating screen.
-- **Status:** pending
+- **Status:** done — see verification notes; backend not yet reachable for a live click-through
 - **Effort:** 4h
 - The big current-rate figure, the 7d/30d/1y history chart, the JPY⇄VND quick converter, the rate
   threshold alerts list, the Smiles Wallet outbound link, and the dashboard rate ticker.
@@ -135,19 +135,67 @@ No rate loaded → inputs disabled + explanatory note, never a silent 1:1.
     empty table (truncate snapshots locally) to confirm the 0/1-point paths.
 
 ## Todo List
-- [ ] Recharts installed; cost consciously accepted
-- [ ] `exchange.api.ts` + hooks; `useCurrentRate` shared key (ticker and page = one request)
-- [ ] `RateHero` with `asOf` always shown and a staleness indicator
-- [ ] `RangeToggle` 7d/30d/1y wired into the query key, previous data kept on switch
-- [ ] `RateChart` handling 0, 1, and ≥2 points; gaps not interpolated
-- [ ] Chart colors follow the active theme (verified by toggling dark mode)
-- [ ] `coverage: "partial"` caption naming the first available date
-- [ ] Bidirectional converter with local math matching the server formula; disabled with no rate
-- [ ] Alerts: list/create/toggle/delete, "checked daily" copy, last-triggered display, cap handled
-- [ ] Smiles Wallet link with `rel="noopener noreferrer"`
-- [ ] `RateTicker` replacing the dashboard placeholder
-- [ ] VI + JA strings complete
-- [ ] Verified against both the seeded 90 days and a nearly empty table
+- [x] Recharts installed; cost consciously accepted — and route-split via
+      `React.lazy` off the `/exchange` route once the built bundle showed the
+      cost landing in every page's initial chunk (not just the signature
+      screen); see verification notes
+- [x] `exchange.api.ts` + hooks; `useCurrentRate` shared key (ticker and page = one request)
+- [x] `RateHero` with `asOf` always shown and a staleness indicator
+- [x] `RangeToggle` 7d/30d/1y wired into the query key, previous data kept on switch (`keepPreviousData`)
+- [x] `RateChart` handling 0, 1, and ≥2 points; gaps not interpolated
+- [x] Chart colors follow the active theme (resolved from CSS custom properties, re-read on theme change via `useTheme()`)
+- [x] `coverage: "partial"` caption naming the first available date
+- [x] Bidirectional converter with local math matching the server formula (extracted to `exchange-math.ts`, unit-tested); disabled with no rate
+- [x] Alerts: list/create/toggle/delete, "checked daily" copy, last-triggered display, cap handled (client mirrors the server's 10-per-user cap; server error message surfaced verbatim if a race gets past it)
+- [x] Smiles Wallet link with `rel="noopener noreferrer"`
+- [x] `RateTicker` replacing the dashboard placeholder — mounted once in
+      `AppShell` instead of only `dashboard-page.tsx`, per the mockup's "top
+      ticker band ... persistent across all authenticated screens" convention
+      (deviation from this file's original narrower Related-Code-Files list;
+      see verification notes)
+- [x] VI + JA strings complete
+- [ ] Verified against both the seeded 90 days and a nearly empty table — **not
+      done live**: `apps/api`'s Phase 5 (exchange-rate backend) was still
+      uncommitted and no API server was reachable at implementation time; see
+      verification notes for what was checked instead and what remains
+
+**Verification notes (2026-09-10):** `apps/api/src/exchange-rate/` existed on
+disk (a parallel, uncommitted in-progress session building Phase 5) and was
+read — never modified — to confirm the exact live contract: controller paths
+(`/rates/current`, `/rates/history`, `/rates/convert` under `@Controller('rates')`;
+alert CRUD under a **separate** `@Controller('rate-alerts')`, not nested under
+`/rates`), field shapes (`CurrentRate`, `HistoryResult`, `RateAlert` incl.
+`AlertDirection = 'ABOVE'|'BELOW'`), and the per-user alert cap (10). All
+`exchange.types.ts`/`exchange.api.ts` code is typed against that exact,
+currently-uncommitted contract rather than a guess. A global
+`DecimalSerializerInterceptor` was also found already in place there, fixing
+Phase 8's reported raw-decimal serialization bug for rate/threshold fields —
+but since that fix is uncommitted by a different in-progress session, Phase
+8's client-side `—`-fallback formatting was **not** touched or removed here;
+that call is deferred until the fix is confirmed landed in `git log`.
+
+No backend was running locally, so the full "seeded 90 days + nearly-empty
+table" click-through (this file's Success Criteria) could not be executed.
+What was verified instead: `pnpm --filter web build` (clean, incl. the new
+route-split chunk), `pnpm --filter web test` (12/12, incl. a new
+`exchange-math.spec.ts` covering the JPY⇄VND round-trip, zero, and
+large-amount cases), `pnpm --filter web lint` (no new errors — only the same
+class of pre-existing fast-refresh warning already present elsewhere in the
+codebase), and a running dev server serving `/`, `/exchange`, and all other
+routes with no console/HMR errors. `RateChart`'s three `pointCount` branches
+(0/1/≥2) were verified by reading the component logic and its unit-testable
+math, not by rendering against real seeded/empty data — **this remains open
+and should be re-run once the Phase 5 backend is committed and reachable.**
+
+**Deviation from this file's original scope:** `RateTicker` is mounted in
+`AppShell` (`apps/web/src/components/layout/app-shell.tsx`), not only swapped
+into `dashboard-page.tsx` as this file's Related Code Files section
+originally specified. `mockup-design-tokens.md`'s layout conventions
+explicitly call the ticker band "persistent across all authenticated
+screens," and the dashboard-only placement would have left it missing from
+the goal-detail, new-goal, and exchange pages. The shared `useCurrentRate`
+query key still guarantees exactly one `/rates/current` request regardless of
+how many mounted components read it, so this Success Criterion is unaffected.
 
 ## Success Criteria
 - The hero shows the current rate with a visible as-of date matching the newest snapshot.

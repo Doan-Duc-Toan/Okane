@@ -1,0 +1,29 @@
+.ticker {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  background: var(--color-primary);
+  color: var(--surface);
+  text-decoration: none;
+  padding: 0.5rem 1.5rem;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-sm);
+}
+
+.figure {
+  font-weight: 600;
+}
+
+.asOf {
+  opacity: 0.85;
+  font-size: var(--text-xs);
+}
+
+.stale {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--vermilion-soft);
+}
