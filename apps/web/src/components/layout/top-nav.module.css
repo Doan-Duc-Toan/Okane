@@ -8,7 +8,8 @@
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: var(--space-section-gap);
+  flex-wrap: wrap;
+  gap: 0.6rem var(--space-section-gap);
   padding: 0.9rem 1.5rem;
 }
 
@@ -23,6 +24,7 @@
   display: flex;
   gap: 1.25rem;
   flex: 1;
+  min-width: 0;
 }
 
 .link {
@@ -32,6 +34,7 @@
   font-weight: 600;
   padding: 0.4rem 0;
   border-bottom: 2px solid transparent;
+  white-space: nowrap;
 }
 
 .linkActive {
@@ -42,10 +45,13 @@
 .controls {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
 .signOut {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   border: 1px solid var(--color-line);
   background: transparent;
   color: var(--color-ink-soft);
@@ -53,9 +59,49 @@
   padding: 0.45rem 0.85rem;
   font-size: var(--text-xs);
   cursor: pointer;
+  white-space: nowrap;
+}
+
+.signOut svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex-shrink: 0;
 }
 
 .signOut:hover {
   border-color: var(--color-alert);
   color: var(--color-alert);
+}
+
+/* Below ~600px there isn't room for brand + 2 nav links + theme(3) +
+   language(2) + sign-out all on one line — push the primary nav links
+   onto their own full-width row instead of letting anything clip or
+   force horizontal scroll. */
+@media (max-width: 640px) {
+  .inner {
+    padding: 0.65rem 1rem;
+    gap: 0.5rem 0.75rem;
+  }
+
+  .nav {
+    order: 3;
+    flex-basis: 100%;
+    justify-content: center;
+    gap: 1.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--color-line);
+  }
+
+  .signOutLabel {
+    display: none;
+  }
+
+  .signOut {
+    padding: 0.45rem;
+  }
+
+  .signOut svg {
+    width: 1rem;
+    height: 1rem;
+  }
 }

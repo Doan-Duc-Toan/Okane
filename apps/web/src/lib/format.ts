@@ -15,7 +15,7 @@ const LOCALE_BY_LANG: Record<string, string> = {
   ja: 'ja-JP',
 }
 
-function resolveLocale(locale: string): string {
+export function resolveLocale(locale: string): string {
   return LOCALE_BY_LANG[locale] ?? locale
 }
 

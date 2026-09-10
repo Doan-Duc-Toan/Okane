@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import { AmountInput } from '@/components/ui/amount-input'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
@@ -87,15 +88,12 @@ export function EntryForm({ goalId, goalCurrency, progress }: EntryFormProps) {
   return (
     <form onSubmit={handleSubmit} noValidate className={styles.form}>
       <div className={styles.row}>
-        <Input
+        <AmountInput
           id={amountInputId}
           label={t('field.amount')}
-          type="number"
-          min="0.01"
-          step="0.01"
           required
           value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          onChange={setAmount}
           error={amountError ?? undefined}
         />
         <Select

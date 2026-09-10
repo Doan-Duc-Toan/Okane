@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import { AmountInput } from '@/components/ui/amount-input'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
@@ -86,14 +87,11 @@ export function GoalForm({ mode, initialValues, submitting, onSubmit, onCancel }
         onChange={(e) => setName(e.target.value)}
         error={nameError ?? undefined}
       />
-      <Input
+      <AmountInput
         label={t('newGoal.target')}
-        type="number"
-        min="0.01"
-        step="0.01"
         required
         value={targetAmount}
-        onChange={(e) => setTargetAmount(e.target.value)}
+        onChange={setTargetAmount}
         error={amountError ?? undefined}
       />
       <Select
