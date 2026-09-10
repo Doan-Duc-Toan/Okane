@@ -63,9 +63,11 @@ export function LoginPage() {
           navigate(state?.from?.pathname ?? '/', { replace: true })
         },
         onError: (err) => {
-          if (err instanceof ApiError && err.status === 401) {
-            setError(t('login.error.invalidCredentials'))
+          if (err instanceof ApiError) {
+            setError(err.status === 401 ? t('login.error.invalidCredentials') : err.message)
           } else {
+            // A real fetch-level failure (server unreachable, DNS, etc.) — the
+            // one case this message is actually true for.
             setError(t('login.error.network'))
           }
         },

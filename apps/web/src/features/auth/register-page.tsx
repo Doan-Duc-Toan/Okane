@@ -59,9 +59,15 @@ export function RegisterPage() {
           navigate('/', { replace: true })
         },
         onError: (err) => {
-          if (err instanceof ApiError && err.status === 409) {
-            setEmailError(t('register.error.emailTaken'))
+          if (err instanceof ApiError) {
+            if (err.status === 409) {
+              setEmailError(t('register.error.emailTaken'))
+            } else {
+              setPasswordError(err.message)
+            }
           } else {
+            // A real fetch-level failure (server unreachable, DNS, etc.) — the
+            // one case this message is actually true for.
             setPasswordError(t('login.error.network'))
           }
         },
