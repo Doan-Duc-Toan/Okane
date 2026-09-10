@@ -36,9 +36,19 @@ export class DecimalSerializerInterceptor implements NestInterceptor {
 }
 
 function serializeDecimals(value: unknown, fieldName?: string): unknown {
-  if (value instanceof Decimal) {
+  // `Decimal.isDecimal()` (not `instanceof Decimal`) — Prisma's query engine
+  // constructs Decimal values through its own bundled copy of decimal.js,
+  // which is not always the same class reference this file imports from
+  // `@prisma/client/runtime/library`. `instanceof` silently failed against
+  // real query results (proven live: a rate-alert's `threshold` came back as
+  // the raw internal `{s, e, d}` shape instead of a fixed-scale string), so
+  // every Decimal in every response fell through to the generic object
+  // branch below and leaked decimal.js internals. `isDecimal` duck-types
+  // across bundled copies and is the check decimal.js itself recommends for
+  // exactly this situation.
+  if (Decimal.isDecimal(value)) {
     const scale = fieldName && RATE_FIELD_NAMES.has(fieldName) ? RATE_FIELD_SCALE : MONEY_FIELD_SCALE;
-    return value.toFixed(scale);
+    return (value as InstanceType<typeof Decimal>).toFixed(scale);
   }
   if (Array.isArray(value)) {
     return value.map((item) => serializeDecimals(item, fieldName));

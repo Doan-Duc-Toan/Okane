@@ -1,7 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
-import { DecimalSerializerInterceptor } from './common/decimal.serializer.interceptor.js';
 import { PrismaClientExceptionFilter } from './common/prisma-error.filter.js';
 
 async function bootstrap() {
@@ -15,7 +14,9 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  app.useGlobalInterceptors(new DecimalSerializerInterceptor());
+  // DecimalSerializerInterceptor is registered as an APP_INTERCEPTOR in
+  // AppModule (not here) so it also applies to e2e tests, which build their
+  // own NestApplication directly from AppModule and never call bootstrap().
   app.useGlobalFilters(new PrismaClientExceptionFilter());
   app.enableShutdownHooks();
 
