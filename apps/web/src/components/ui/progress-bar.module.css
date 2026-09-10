@@ -1,0 +1,18 @@
+.track {
+  width: 100%;
+  background: var(--color-line);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  height: var(--progress-height-list);
+}
+
+.track[data-size='hero'] {
+  height: var(--progress-height-hero);
+}
+
+.fill {
+  height: 100%;
+  background: var(--color-positive);
+  border-radius: var(--radius-pill);
+  transition: width 0.2s ease;
+}

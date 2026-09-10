@@ -1,0 +1,105 @@
+{
+  "common": {
+    "loading": "読み込み中…",
+    "retry": "再試行",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "delete": "削除",
+    "edit": "編集",
+    "confirm": "確定",
+    "back": "← 戻る",
+    "somethingWrong": "エラーが発生しました。もう一度お試しください。",
+    "sessionExpired": "セッションの有効期限が切れました。再度ログインしてください。",
+    "notFound": {
+      "title": "ページが見つかりません",
+      "body": "お探しのページは存在しないか、移動された可能性があります。",
+      "cta": "ホームに戻る"
+    }
+  },
+  "theme": {
+    "label": "テーマ",
+    "light": "ライト",
+    "dark": "ダーク",
+    "system": "システムに従う"
+  },
+  "language": {
+    "label": "言語",
+    "vi": "Tiếng Việt",
+    "ja": "日本語"
+  },
+  "nav": {
+    "dashboard": "ダッシュボード",
+    "goal": "目標",
+    "exchange": "為替・換算",
+    "newGoal": "目標を作成",
+    "logout": "ログアウト"
+  },
+  "login": {
+    "h1": "どこで働いていても、目的を持って貯金しよう。",
+    "p": "目標を設定し、貯金を記録し、円とドンのリアルタイム為替レートで今の進捗を確認できます。",
+    "tabLogin": "ログイン",
+    "tabRegister": "新規登録",
+    "welcome": "おかえりなさい",
+    "submit": "ログイン →",
+    "or": "または",
+    "google": "Googleでログイン",
+    "googleComingSoon": "近日公開",
+    "createAccount": "新しいアカウントを作成",
+    "error": {
+      "invalidCredentials": "メールアドレスまたはパスワードが正しくありません"
+    }
+  },
+  "field": {
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "confirmPassword": "パスワード（確認）",
+    "displayName": "表示名（任意）",
+    "amount": "金額",
+    "date": "日付",
+    "note": "メモ（任意）"
+  },
+  "dashboard": {
+    "savedJpy": "貯金額・JPY",
+    "savedVnd": "貯金額・VND",
+    "convertToday": "本日の JPY→VND 換算",
+    "yourGoals": "あなたの目標",
+    "recentActivity": "最近のアクティビティ",
+    "newGoal": "新しい目標",
+    "empty": {
+      "title": "まだ目標がありません",
+      "body": "最初の目標を作成して、貯金の旅を記録しましょう。",
+      "cta": "目標を作成"
+    }
+  },
+  "goal": {
+    "back": "← ダッシュボードへ",
+    "logEntry": "新しい貯金を記録",
+    "addEntry": "この記録を追加",
+    "history": "履歴"
+  },
+  "exchange": {
+    "sub": "参考市場レートです。送金業者の実際の取引レートではありません",
+    "quickConvert": "クイック換算",
+    "chart7d": "7日間",
+    "chart30d": "30日間",
+    "chart1y": "1年間",
+    "alerts": "為替アラート",
+    "addAlert": "+ アラートを追加",
+    "smilesTitle": "この金額をベトナムへ送金しますか？",
+    "smilesDesc": "Smiles Walletで実際の手数料・レートを確認",
+    "smilesCta": "Smilesで確認 →"
+  },
+  "newGoal": {
+    "h1": "貯金目標",
+    "name": "目標の名前",
+    "namePlaceholder": "例：ハノイでマイホーム購入、留学ローン返済...",
+    "target": "目標金額",
+    "currency": "通貨",
+    "deadline": "期限（任意）",
+    "hint": "期限を設定すると、Okaneが毎月の目安貯金額を提案します。異なる通貨で貯金している場合は現在のレートで換算します。",
+    "submit": "目標を作成"
+  },
+  "smiles": {
+    "outboundUrl": "https://www.smileswallet.com/japan/vi/"
+  }
+}

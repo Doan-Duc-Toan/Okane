@@ -39,12 +39,12 @@ Context: [brainstorm](../reports/brainstorm-260909-1453-savings-app-idea.md) ·
 
 | # | Phase | Status | Effort | File |
 |---|-------|--------|--------|------|
-| 1 | Monorepo scaffold & local dev environment | pending | 2h | [phase-01-monorepo-scaffold-and-dev-environment.md](phase-01-monorepo-scaffold-and-dev-environment.md) |
+| 1 | Monorepo scaffold & local dev environment | done | 2h | [phase-01-monorepo-scaffold-and-dev-environment.md](phase-01-monorepo-scaffold-and-dev-environment.md) |
 | 2 | Prisma schema & data-isolation foundation | pending | 3h | [phase-02-prisma-schema-and-data-isolation.md](phase-02-prisma-schema-and-data-isolation.md) |
 | 3 | Auth backend (JWT access + refresh) | pending | 4h | [phase-03-auth-backend-jwt.md](phase-03-auth-backend-jwt.md) |
 | 4 | Goals & savings entries backend + goal math | pending | 6h | [phase-04-goals-and-entries-backend.md](phase-04-goals-and-entries-backend.md) |
 | 5 | Exchange-rate backend (provider, cron, history, alerts) | pending | 5h | [phase-05-exchange-rate-backend.md](phase-05-exchange-rate-backend.md) |
-| 6 | React app shell (tokens, theme, i18n, routing, API client) | pending | 5h | [phase-06-react-app-shell.md](phase-06-react-app-shell.md) |
+| 6 | React app shell (tokens, theme, i18n, routing, API client) | done | 5h | [phase-06-react-app-shell.md](phase-06-react-app-shell.md) |
 | 7 | Auth UI (login, register, session handling) | pending | 3h | [phase-07-auth-ui.md](phase-07-auth-ui.md) |
 | 8 | Goals UI (dashboard, goal detail, forms, history) | pending | 6h | [phase-08-goals-ui.md](phase-08-goals-ui.md) |
 | 9 | Exchange & Convert UI (rate, chart, converter, alerts) | pending | 4h | [phase-09-exchange-and-convert-ui.md](phase-09-exchange-and-convert-ui.md) |

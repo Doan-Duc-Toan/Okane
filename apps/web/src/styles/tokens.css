@@ -1,0 +1,108 @@
+/*
+ * Design tokens — transcribed verbatim from the approved mockup.
+ * Source: plans/260910-1521-okane-react-nestjs-mvp/mockup-design-tokens.md
+ * Do not invent or "improve" any color, font, radius, or spacing value here —
+ * go back to that file (or the user) if a value is missing.
+ */
+
+:root {
+  /* Color — light (default) */
+  --ink: #1c2430;
+  --ink-soft: #5b6472;
+  --ink-faint: #8a8f7c;
+  --paper: #f7f4ec;
+  --surface: #fffdf8;
+  --line: #e2dcc9;
+  --ai: #1f3a5f;
+  --ai-bright: #2f5c8f;
+  --ai-soft: #e7edf3;
+  --jade: #3f6b52;
+  --jade-soft: #e6ede4;
+  --vermilion: #b5482f;
+  --vermilion-soft: #f6e6df;
+  --shadow: 0 1px 2px rgba(28, 36, 48, 0.04), 0 8px 24px rgba(28, 36, 48, 0.06);
+
+  /* Fonts */
+  --font-heading: 'Zen Kaku Gothic New', 'Noto Sans', sans-serif;
+  --font-body: 'Noto Sans', 'Hiragino Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* Radius */
+  --radius-card: 10px;
+  --radius-pill: 999px;
+  --radius-control: 7px;
+
+  /* Spacing rhythm */
+  --space-card-padding: 1.625rem; /* mockup range 1.5–1.75rem */
+  --space-section-gap: 1.75rem;
+  --space-field-stack: 1.1rem;
+
+  /* Type scale (implementation detail — not specified in the mockup beyond the
+     font stacks above; ordinary rem progression, not a design decision) */
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+
+  /* Progress bars */
+  --progress-height-list: 5px;
+  --progress-height-hero: 8px;
+}
+
+/* Dark — system preference, unless an explicit light choice overrides it */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --ink: #ece7da;
+    --ink-soft: #aba497;
+    --ink-faint: #767065;
+    --paper: #12151c;
+    --surface: #1a1e27;
+    --line: #2b2f3a;
+    --ai: #7ea1cc;
+    --ai-bright: #9cbbe0;
+    --ai-soft: rgba(126, 161, 204, 0.14);
+    --jade: #86b494;
+    --jade-soft: rgba(134, 180, 148, 0.14);
+    --vermilion: #e08a70;
+    --vermilion-soft: rgba(224, 138, 112, 0.14);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Dark — explicit toggle, wins either direction */
+[data-theme='dark'] {
+  --ink: #ece7da;
+  --ink-soft: #aba497;
+  --ink-faint: #767065;
+  --paper: #12151c;
+  --surface: #1a1e27;
+  --line: #2b2f3a;
+  --ai: #7ea1cc;
+  --ai-bright: #9cbbe0;
+  --ai-soft: rgba(126, 161, 204, 0.14);
+  --jade: #86b494;
+  --jade-soft: rgba(134, 180, 148, 0.14);
+  --vermilion: #e08a70;
+  --vermilion-soft: rgba(224, 138, 112, 0.14);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Aliases used across phases 7-9 and the app-shell.md file tree, mapped onto
+   the tokens above (--color-*) so component code reads intent-first. */
+:root {
+  --color-primary: var(--ai);
+  --color-primary-bright: var(--ai-bright);
+  --color-primary-soft: var(--ai-soft);
+  --color-positive: var(--jade);
+  --color-positive-soft: var(--jade-soft);
+  --color-alert: var(--vermilion);
+  --color-alert-soft: var(--vermilion-soft);
+  --color-bg: var(--paper);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+}

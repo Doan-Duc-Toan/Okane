@@ -1,0 +1,20 @@
+/*
+ * Fonts are loaded via <link> tags in index.html (Google Fonts, with
+ * subset=vietnamese,japanese) — this file only documents the face
+ * assignments so the mapping lives next to the rest of the token system.
+ * Noto Sans covers both Vietnamese diacritics and Japanese glyphs; do not
+ * substitute a different body face or diacritics will fall back mid-sentence.
+ */
+
+.display,
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+}
+
+.mono,
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}

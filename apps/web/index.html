@@ -1,10 +1,34 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>web</title>
+    <title>Okane</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700&family=Noto+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap&subset=vietnamese,japanese"
+      rel="stylesheet"
+    />
+    <script>
+      // Pre-paint theme resolution — runs before React mounts so there is no
+      // dark-mode flash. Only sets data-theme for an EXPLICIT light/dark choice;
+      // 'system' (or nothing stored) leaves the attribute unset and tokens.css's
+      // `prefers-color-scheme` media query resolves it at CSS-parse time, before
+      // any JS runs — the only way to guarantee zero flash for the system case.
+      // Mirrors src/contexts/theme-context.tsx.
+      (function () {
+        try {
+          var stored = localStorage.getItem('okane.theme');
+          if (stored === 'light' || stored === 'dark') {
+            document.documentElement.dataset.theme = stored;
+          }
+        } catch (e) {
+          // localStorage unavailable (private mode etc.) — fall back to system.
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

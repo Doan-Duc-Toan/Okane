@@ -9,7 +9,7 @@
 
 ## Overview
 - **Priority:** Blocking for all UI phases.
-- **Status:** pending
+- **Status:** done
 - **Effort:** 5h
 - The foundation every screen sits on: the design-token stylesheet, dark mode, VI/JA i18n,
   the router with all routes pre-declared, the authenticated fetch client, TanStack Query,
@@ -184,21 +184,30 @@ script) and `apps/web/src/lib/format.spec.ts`.
     string changes with no reload; `/` while signed out → redirects to `/login`.
 
 ## Todo List
-- [ ] Frontend dependencies installed; `@/` alias configured
-- [ ] `tokens.css` transcribed from the mockup (palette + spacing/radius/type scale)
-- [ ] Fonts loaded with Vietnamese **and** Japanese subsets
-- [ ] Pre-paint theme script — no dark-mode flash
-- [ ] `ThemeContext` with light/dark/system + persistence + `matchMedia` subscription
-- [ ] i18next configured, VI default, persisted; `<html lang>` updated
-- [ ] Full VI/JA dictionary ported from the mockup
-- [ ] `format.ts` parses **string** money values; unit tests green
-- [ ] `api-client.ts` with single-flight 401 refresh + retry-once
-- [ ] TanStack Query provider configured
-- [ ] `AuthContext`: access in memory, refresh in localStorage, silent restore on boot
-- [ ] `AppShell` + nav matching the mockup
-- [ ] UI primitives incl. `Money` (tabular-nums) and `ProgressBar`
-- [ ] All 7 routes declared with placeholders; `ProtectedRoute` working
-- [ ] Verified: theme persists flash-free, language switches live, guest is redirected
+- [x] Frontend dependencies installed; `@/` alias configured
+- [x] `tokens.css` transcribed from the mockup (palette + spacing/radius/type scale)
+- [x] Fonts loaded with Vietnamese **and** Japanese subsets
+- [x] Pre-paint theme script — no dark-mode flash
+- [x] `ThemeContext` with light/dark/system + persistence + `matchMedia` subscription
+- [x] i18next configured, VI default, persisted; `<html lang>` updated
+- [x] Full VI/JA dictionary ported from the mockup
+- [x] `format.ts` parses **string** money values; unit tests green
+- [x] `api-client.ts` with single-flight 401 refresh + retry-once
+- [x] TanStack Query provider configured
+- [x] `AuthContext`: access in memory, refresh in localStorage, silent restore on boot
+- [x] `AppShell` + nav matching the mockup
+- [x] UI primitives incl. `Money` (tabular-nums) and `ProgressBar`
+- [x] All 7 routes declared with placeholders; `ProtectedRoute` working
+- [x] Verified: theme persists flash-free, language switches live, guest is redirected
+
+**Verification notes (2026-09-10):** confirmed via a headless Puppeteer check (not just build
+output) — guest visiting `/` redirects to `/login`; explicit `okane.theme=dark` renders
+`rgb(18,21,28)` body background (dark `--paper`); `prefers-color-scheme: dark` with **no** stored
+choice renders the same dark background with `data-theme` left unset (proves the flash-free
+CSS-only path); flipping back to a light system preference renders `rgb(247,244,236)` (light
+`--paper`); zero console/page errors throughout. `pnpm --filter web build`, `test` (7/7), and
+`lint` (oxlint, 2 non-blocking `only-export-components` fast-refresh warnings on the two context
+files — accepted, standard React context+hook co-location) all pass.
 
 ## Success Criteria
 - Reloading in dark mode shows **no white flash** (verify visually, and by throttling the network).

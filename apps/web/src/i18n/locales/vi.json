@@ -1,0 +1,105 @@
+{
+  "common": {
+    "loading": "Đang tải…",
+    "retry": "Thử lại",
+    "cancel": "Huỷ",
+    "save": "Lưu",
+    "delete": "Xoá",
+    "edit": "Chỉnh sửa",
+    "confirm": "Xác nhận",
+    "back": "← Quay lại",
+    "somethingWrong": "Đã có lỗi xảy ra. Vui lòng thử lại.",
+    "sessionExpired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+    "notFound": {
+      "title": "Không tìm thấy trang",
+      "body": "Trang bạn tìm không tồn tại hoặc đã được di chuyển.",
+      "cta": "Về trang chủ"
+    }
+  },
+  "theme": {
+    "label": "Giao diện",
+    "light": "Sáng",
+    "dark": "Tối",
+    "system": "Theo hệ thống"
+  },
+  "language": {
+    "label": "Ngôn ngữ",
+    "vi": "Tiếng Việt",
+    "ja": "日本語"
+  },
+  "nav": {
+    "dashboard": "Tổng quan",
+    "goal": "Mục tiêu",
+    "exchange": "Tỷ giá & Quy đổi",
+    "newGoal": "Tạo mục tiêu",
+    "logout": "Đăng xuất"
+  },
+  "login": {
+    "h1": "Tiết kiệm có mục đích, dù bạn đang làm việc ở đâu.",
+    "p": "Đặt mục tiêu, ghi lại từng khoản để dành, và xem tỷ giá Yên–Đồng thời gian thực để biết mình đang ở đâu trên chặng đường.",
+    "tabLogin": "Đăng nhập",
+    "tabRegister": "Đăng ký",
+    "welcome": "Chào mừng trở lại",
+    "submit": "Đăng nhập →",
+    "or": "HOẶC",
+    "google": "Đăng nhập với Google",
+    "googleComingSoon": "Sắp ra mắt",
+    "createAccount": "Tạo tài khoản mới",
+    "error": {
+      "invalidCredentials": "Email hoặc mật khẩu không đúng"
+    }
+  },
+  "field": {
+    "email": "Email",
+    "password": "Mật khẩu",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "displayName": "Tên hiển thị (tuỳ chọn)",
+    "amount": "Số tiền",
+    "date": "Ngày",
+    "note": "Ghi chú (tuỳ chọn)"
+  },
+  "dashboard": {
+    "savedJpy": "Đã tiết kiệm · JPY",
+    "savedVnd": "Đã tiết kiệm · VND",
+    "convertToday": "Quy đổi JPY → VND hôm nay",
+    "yourGoals": "Mục tiêu của bạn",
+    "recentActivity": "Hoạt động gần đây",
+    "newGoal": "Mục tiêu mới",
+    "empty": {
+      "title": "Chưa có mục tiêu nào",
+      "body": "Tạo mục tiêu đầu tiên để bắt đầu theo dõi hành trình tiết kiệm của bạn.",
+      "cta": "Tạo mục tiêu"
+    }
+  },
+  "goal": {
+    "back": "← Về tổng quan",
+    "logEntry": "Ghi khoản tiết kiệm mới",
+    "addEntry": "Thêm khoản này",
+    "history": "Lịch sử"
+  },
+  "exchange": {
+    "sub": "Tỷ giá thị trường tham khảo — không phải tỷ giá giao dịch thực tế của bất kỳ đơn vị chuyển tiền nào",
+    "quickConvert": "Tính nhanh",
+    "chart7d": "7 ngày",
+    "chart30d": "30 ngày",
+    "chart1y": "1 năm",
+    "alerts": "Cảnh báo tỷ giá",
+    "addAlert": "+ Thêm cảnh báo",
+    "smilesTitle": "Muốn chuyển khoản này về Việt Nam?",
+    "smilesDesc": "Xem phí & tỷ giá thực tế trên Smiles Wallet",
+    "smilesCta": "Kiểm tra trên Smiles →"
+  },
+  "newGoal": {
+    "h1": "Mục tiêu tiết kiệm",
+    "name": "Tên mục tiêu",
+    "namePlaceholder": "VD: Mua nhà ở Hà Nội, Trả nợ du học...",
+    "target": "Số tiền mục tiêu",
+    "currency": "Loại tiền",
+    "deadline": "Hạn chót (tuỳ chọn)",
+    "hint": "Nếu đặt hạn chót, Okane sẽ tự gợi ý số tiền nên để dành mỗi tháng — và quy đổi theo tỷ giá hiện tại nếu bạn tiết kiệm bằng đồng tiền khác.",
+    "submit": "Tạo mục tiêu"
+  },
+  "smiles": {
+    "outboundUrl": "https://www.smileswallet.com/japan/vi/"
+  }
+}
