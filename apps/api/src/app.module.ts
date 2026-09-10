@@ -6,13 +6,13 @@ import { AppService } from './app.service.js';
 import { AuthModule } from './auth/auth.module.js';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard.js';
 import { validate } from './config/env.validation.js';
+import { GoalsModule } from './goals/goals.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
+import { SavingsEntriesModule } from './savings-entries/savings-entries.module.js';
 import { UsersModule } from './users/users.module.js';
 
 // Extension slots — each backend phase appends its module import here,
 // so parallel phases never restructure this file, only add a line.
-// import { GoalsModule } from './goals/goals.module.js';
-// import { SavingsEntriesModule } from './savings-entries/savings-entries.module.js';
 // import { ExchangeRateModule } from './exchange-rate/exchange-rate.module.js';
 
 @Module({
@@ -27,8 +27,8 @@ import { UsersModule } from './users/users.module.js';
     PrismaModule,
     AuthModule,
     UsersModule,
-    // GoalsModule,
-    // SavingsEntriesModule,
+    GoalsModule,
+    SavingsEntriesModule,
     // ExchangeRateModule,
   ],
   controllers: [AppController],

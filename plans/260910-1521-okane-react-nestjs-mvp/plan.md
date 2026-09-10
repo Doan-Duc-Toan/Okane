@@ -42,7 +42,7 @@ Context: [brainstorm](../reports/brainstorm-260909-1453-savings-app-idea.md) ·
 | 1 | Monorepo scaffold & local dev environment | done | 2h | [phase-01-monorepo-scaffold-and-dev-environment.md](phase-01-monorepo-scaffold-and-dev-environment.md) |
 | 2 | Prisma schema & data-isolation foundation | done — pinned Prisma 6.19.3, see phase notes | 3h | [phase-02-prisma-schema-and-data-isolation.md](phase-02-prisma-schema-and-data-isolation.md) |
 | 3 | Auth backend (JWT access + refresh) | done | 4h | [phase-03-auth-backend-jwt.md](phase-03-auth-backend-jwt.md) |
-| 4 | Goals & savings entries backend + goal math | pending | 6h | [phase-04-goals-and-entries-backend.md](phase-04-goals-and-entries-backend.md) |
+| 4 | Goals & savings entries backend + goal math | done — cross-currency freeze proven via unit fake; see phase notes | 6h | [phase-04-goals-and-entries-backend.md](phase-04-goals-and-entries-backend.md) |
 | 5 | Exchange-rate backend (provider, cron, history, alerts) | pending | 5h | [phase-05-exchange-rate-backend.md](phase-05-exchange-rate-backend.md) |
 | 6 | React app shell (tokens, theme, i18n, routing, API client) | done | 5h | [phase-06-react-app-shell.md](phase-06-react-app-shell.md) |
 | 7 | Auth UI (login, register, session handling) | done | 3h | [phase-07-auth-ui.md](phase-07-auth-ui.md) |

@@ -10,7 +10,8 @@
 
 ## Overview
 - **Priority:** Blocking — this is the product's core.
-- **Status:** pending
+- **Status:** done — cross-currency conversion demonstrated via unit tests against a fixed-rate
+  fake, since the live rate isn't wired until Phase 5 (see Deviations below)
 - **Effort:** 6h
 - Goals CRUD, savings-entry logging with cross-currency freezing, the computed progress/goal-math
   payload, the dashboard summary endpoint, and the data-isolation test suite.
@@ -152,16 +153,47 @@ FX behaviour deterministically testable.
     stays independently runnable.
 
 ## Todo List
-- [ ] Goal DTOs + validation (currency immutable on update)
-- [ ] `GoalsService` fully `userId`-scoped, 404-on-foreign for every operation
-- [ ] `GoalMathService` pure, frozen signature, no Prisma import
-- [ ] Saved totals via aggregate/groupBy — no N+1
-- [ ] Entry creation freezes `amountInGoalCurrency` + `fxRateUsed`; 503 when no rate
-- [ ] `PATCH /entries/:id` re-freezes at today's rate (and the behaviour is documented)
-- [ ] `GET /api/dashboard` returns totals + goals + 10 recent entries in one call
-- [ ] `goal-math.service.spec.ts` covers all 10 listed cases
-- [ ] `data-isolation.e2e-spec.ts` green — every cross-user access returns 404
-- [ ] `app.module.ts` imports both modules
+- [x] Goal DTOs + validation (currency immutable on update)
+- [x] `GoalsService` fully `userId`-scoped, 404-on-foreign for every operation
+- [x] `GoalMathService` pure, frozen signature, no Prisma import
+- [x] Saved totals via aggregate/groupBy — no N+1 (verified: query count fixed at 5 goals/100
+  entries and 10 goals/200 entries, both measured at 4 queries)
+- [x] Entry creation freezes `amountInGoalCurrency` + `fxRateUsed`; 503 when no rate
+- [x] `PATCH /entries/:id` re-freezes at today's rate (and the behaviour is documented)
+- [x] `GET /api/dashboard` returns totals + goals + 10 recent entries in one call
+- [x] `goal-math.service.spec.ts` covers all 10+ listed cases (12 tests)
+- [x] `data-isolation.e2e-spec.ts` green — every cross-user access returns 404 (9 cases)
+- [x] `app.module.ts` imports both modules
+
+## Deviations from the blueprint
+- **`GoalMathService`'s `ProgressBlock` omits `rateAsOf`; it's attached by the caller.** The frozen
+  signature takes only `rate: Decimal | null`, with no date — `rateAsOf` is stitched on by
+  `GoalsService` from a second port method (`RateProvider.getLatestRateAsOf()`), keeping the math
+  service's signature exactly as specified and free of any notion of "when".
+- **Soft dependency implemented as a `RateProviderModule` seam, not an ad hoc stub per module.**
+  `RATE_PROVIDER` (DI token) + `RateProvider` interface live in `src/common/`; both `GoalsModule`
+  and `SavingsEntriesModule` import `RateProviderModule`, which currently binds `StubRateProvider`
+  (always returns `null`). Phase 5 wires the real `ExchangeRateService` by editing this one file
+  rather than touching every consumer — same intent as the blueprint's stub guidance, just DRYer
+  across two consumers instead of one.
+- **Cross-currency entry-freezing and re-freezing are proven at the unit level
+  (`savings-entries.service.spec.ts`, against a fixed-rate fake), not e2e.** With `StubRateProvider`
+  always returning `null` (Phase 4 has no real rate yet), every cross-currency e2e attempt would
+  503 by design — that's correct behavior, but it means the "logs ¥50,000 against a VND goal"
+  success criterion can only be demonstrated live once Phase 5's real rate is wired in. The unit
+  suite substitutes a `FixedRateProvider` to verify the freeze/re-freeze/immutability logic now;
+  re-verify end-to-end after Phase 5 lands (tracked, not skipped).
+- **Money DTOs validate as decimal-formatted strings (`@IsDecimal`), not `class-transformer`-typed
+  `Decimal` fields.** An earlier draft tried `@Type(() => Decimal) @IsPositive()`, but
+  `class-validator`'s `IsPositive` requires `typeof value === 'number'` and would reject every
+  Decimal instance outright. Amounts stay as validated strings through the DTO layer and are only
+  parsed into `Decimal` inside the service (matches the "money in/out as strings" rule from Phase 2
+  more literally, too). `targetAmount > 0` / `amount > 0` and deadline/entryDate date-range rules
+  are enforced in the service layer, not via decorators.
+- **`GoalsController` and pagination-query parsing don't get a dedicated DTO file** — `limit`/`cursor`
+  are validated inline via `ParseIntPipe`/`DefaultValuePipe` in `goal-entries.controller.ts` rather
+  than a `list-entries-query.dto.ts`, since it's two primitives and a dedicated class-validator DTO
+  would be pure ceremony (YAGNI).
 
 ## Success Criteria
 - Every cross-user access in the isolation suite returns **404** (never 200, never 403).
