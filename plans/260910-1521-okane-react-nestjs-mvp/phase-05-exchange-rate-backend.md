@@ -9,7 +9,7 @@
 
 ## Overview
 - **Priority:** High — the FX feature set is the product's differentiator.
-- **Status:** pending
+- **Status:** done — see Verification Notes for two real bugs found and fixed during verification
 - **Effort:** 5h
 - One module owning: the provider client, the daily snapshot cron, the current-rate and history
   endpoints, the converter, and rate-alert CRUD + crossing detection.
@@ -141,18 +141,101 @@ No rate available → the service returns null; callers decide (Phase 4 → 503,
     dev-only route or a `tsx` script, confirm exactly one row per day and that re-running writes nothing new.
 
 ## Todo List
-- [ ] `@nestjs/schedule` installed and `ScheduleModule.forRoot()` registered
-- [ ] Provider client with timeout, payload validation, and retry/backoff
-- [ ] Daily `@Cron` at 01:00 UTC + `onModuleInit` bootstrap when today's snapshot is missing
-- [ ] Snapshot upsert idempotent on `(JPY, VND, date)`
-- [ ] `getLatestRate()` (Phase 4's dependency) + `getLatest()` + `getHistory(range)`
-- [ ] `/rates/current` reports `asOf` and `isStale`; `/rates/history` reports `coverage`
-- [ ] `/rates/convert` with a pure, unit-tested converter
-- [ ] Rate-alert CRUD, user-scoped, capped per user
-- [ ] Pure crossing evaluator — **no re-trigger while the condition merely persists**
-- [ ] Converter + evaluator unit suites green (all listed cases)
-- [ ] Alert isolation e2e green; empty-table read path does not 500
-- [ ] Verified: running the cron twice in one day creates exactly one row
+- [x] `@nestjs/schedule` installed and `ScheduleModule.forRoot()` registered
+- [x] Provider client with timeout, payload validation, and retry/backoff
+- [x] Daily `@Cron` at 01:00 UTC + `onModuleInit` bootstrap when today's snapshot is missing
+- [x] Snapshot upsert idempotent on `(JPY, VND, date)` — required a fix, see Verification Notes
+- [x] `getLatestRate()` (Phase 4's dependency) + `getCurrent()` (full snapshot; the blueprint named
+  this `getLatest()`, implemented as `getCurrent()` — same purpose, see Deviations) + `getHistory(range)`
+- [x] `/rates/current` reports `asOf` and `isStale`; `/rates/history` reports `coverage`
+- [x] `/rates/convert` with a pure, unit-tested converter
+- [x] Rate-alert CRUD, user-scoped, capped per user
+- [x] Pure crossing evaluator — **no re-trigger while the condition merely persists**
+- [x] Converter + evaluator unit suites green (all listed cases)
+- [x] Alert isolation e2e green; empty-table read path does not 500
+- [x] Verified: running the cron twice in one day creates exactly one row
+
+## Deviations from the blueprint
+- **`getLatest()` is named `getCurrent()`** and returns `{rate, base, quote, asOf, isStale, source}` —
+  same contract, different name; picked up as-is from the code rather than renamed, since renaming
+  a frozen read-path method this late has no benefit and only risks an unrelated diff.
+- **`RateAlertsService` reads/writes `threshold` and `lastTriggeredRate` as plain strings** through
+  Prisma's `Decimal` columns (no `new Decimal()` wrapping in the service), matching Phase 4's
+  documented "money in/out as strings" convention — validation (`> 0`) is done via a throwaway
+  `new Decimal(dto.threshold)` comparison, not by storing a `Decimal` instance.
+
+## Verification Notes (2026-09-10)
+Verified by running the actual suites and a live dev server against the real provider — not by
+inspection. Two real, previously-undetected bugs surfaced during this pass and were fixed in place
+(both are in this phase's own files or the one shared seam it touches; no unrelated refactoring):
+
+1. **Snapshot-write race could crash the app.** `RateSnapshotScheduler.runSnapshot()` only wrapped
+   the provider fetch in try/catch; the upsert + alert-evaluation block after it was not caught. Two
+   concurrent app boots (reproduced by running the full e2e suite, where three specs each boot
+   `AppModule` and each triggers the `onModuleInit` bootstrap) raced on the same `(JPY,VND,today)`
+   upsert, and the loser's `PrismaClientKnownRequestError` (P2002) propagated out of
+   `onModuleInit`, crashing that suite's app init. Fixed by wrapping the whole
+   upsert-through-alert-evaluation block in its own try/catch (`rate-snapshot.scheduler.ts`) — a
+   losing race is now treated as "another instance already wrote today's row," logged, and
+   swallowed, matching the phase's own non-functional requirement that a snapshot problem must
+   never crash the app. Confirmed fixed: `pnpm run test:e2e` went from 1 failing suite to 5/5 green.
+2. **`DecimalSerializerInterceptor` used `instanceof Decimal`, which silently failed against real
+   Prisma query results** (Prisma's query engine constructs `Decimal` through its own bundled copy
+   of decimal.js, not always the same class reference `@prisma/client/runtime/library` exports to
+   application code). Every money/rate field fell through to the interceptor's generic
+   object-recursion branch and leaked decimal.js internals — reproduced live via
+   `curl -X PATCH /api/rate-alerts/:id` returning `"threshold":{"s":1,"e":2,"d":[175]}` instead of
+   `"175.00000000"`, the exact shape the frontend team reported for Goals/SavingsEntries. Fixed by
+   switching the check to `Decimal.isDecimal(value)` (decimal.js's own cross-copy-safe duck-type
+   check) in `common/decimal.serializer.interceptor.ts`. Also found: the interceptor was only wired
+   via `app.useGlobalInterceptors()` in `main.ts`, so no e2e test (which builds its own
+   `NestApplication` from `AppModule` and never calls `bootstrap()`) ever exercised it — moved the
+   registration to `{ provide: APP_INTERCEPTOR, useClass: DecimalSerializerInterceptor }` in
+   `app.module.ts` (same pattern already used for `APP_GUARD`), so it now applies everywhere the app
+   is constructed, and removed the now-redundant line from `main.ts`.
+- **Cron idempotency (success criterion 1):** added `test/rate-snapshot-idempotency.e2e-spec.ts` —
+  boots `ExchangeRateModule` for real against `okane_test`, asserts exactly one `RateSnapshot` row
+  after the `onModuleInit` bootstrap, then manually re-invokes the private `runSnapshot()` routine
+  (simulating the daily cron firing later) and asserts the row count is still exactly one. Both
+  assertions pass against the live provider (`open.er-api.com`).
+- **Alert crossing / isolation / empty-table 404 (success criteria 3–4, Implementation Step 11):**
+  added `test/rate-alerts-isolation.e2e-spec.ts` — two users, cross-user 404 on read/update/delete,
+  self-access still works, non-positive threshold rejected (400), the 10-alerts-per-user cap is
+  enforced (11th create → 400), and `GET /rates/current` against a table cleared of snapshots
+  returns 404 (never 500). 7/7 green.
+- **Decimal serialization end-to-end (curl evidence, dev server against the real DB):** created a
+  goal (`targetAmount:"1000000.00"`), logged a cross-currency VND entry against it
+  (`amountInGoalCurrency:"2968.51"`, `fxRateUsed:"168.43447600"`), then fetched the goal detail,
+  the dashboard, and the entries list — every top-level *and* nested Decimal field (including
+  `progress.savedAmount`, `progress.remainingInOtherCurrency`, `progress.rateUsed`) came back as a
+  correctly fixed-scale string after the `isDecimal` fix, none as raw decimal.js internals.
+- **Two Phase-4 contract deviations the frontend flagged were confirmed real** (both live via curl
+  and against phase-04's own frozen endpoint table) and fixed at the source rather than left to the
+  frontend's client-side adapters:
+  - `GET /goals/:id/entries` returned a bare array; now returns `{ entries, nextCursor }`
+    (`savings-entries.service.ts`), with `nextCursor` computed via a limit+1 fetch.
+  - Dashboard `recentEntries` carried a nested `{ goal: { name } }`; now a flat `goalName` string
+    (`dashboard.service.ts`).
+- **Environment-only finding, fixed in test infra (not app code):** every e2e suite — including
+  Phase 3/4's already-committed ones — was silently connecting to the **dev** `okane` database
+  instead of `okane_test`, despite `app.module.ts`'s documented intent. Root cause: `@prisma/client`
+  auto-loads `.env` as an import-time side effect, which runs before `AppModule`'s own
+  `ConfigModule.forRoot({ envFilePath: '.env.test' })` — and dotenv never overrides an
+  already-set variable, so the `.env.test` override was silently lost. Confirmed live: a manual
+  cron run left a stray `RateSnapshot` row in dev `okane`. Fixed via
+  `test/setup-e2e-env.ts` (a `vitest` `setupFiles` entry that loads `.env.test` first, before any
+  spec's own imports) and `fileParallelism: false` in `vitest.config.e2e.ts` (Phase 5 is the first
+  phase with genuinely global, non-per-user shared tables — `RateSnapshot`/`RateAlert` — so
+  cross-file races on them are now possible in a way Phase 3/4's per-user data wasn't exposed to).
+  This is scoped to test config only; no production code path was affected (production always used
+  plain `.env` regardless).
+- **Provider-unreachable success criterion:** re-ran the idempotency spec with
+  `FX_API_URL=https://invalid.does-not-exist.example.com/...`. Confirmed live: the scheduler logged
+  `Rate snapshot fetch failed, no row written for today: TypeError: fetch failed` and did not
+  crash or throw past `onModuleInit` (a pre-existing snapshot row from the prior day was left
+  untouched, standing in for "the app keeps serving the last snapshot"). Not independently
+  re-verified: exercising this through a live `/rates/current` HTTP call mid-outage (checked the DB
+  row directly instead, which is the same underlying read path).
 
 ## Success Criteria
 - After one cron run against the live provider, `RateSnapshot` holds exactly one row for today with
