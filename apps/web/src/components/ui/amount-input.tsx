@@ -13,6 +13,10 @@ interface AmountInputProps {
   error?: string
   required?: boolean
   autoFocus?: boolean
+  /** Defaults to a translated example ("VD: 1.000.000 hoặc 1 triệu, 1 tỷ")
+   *  demonstrating the shorthand grammar below — override only when a
+   *  call site needs a more specific example than the generic one. */
+  placeholder?: string
 }
 
 /**
@@ -30,8 +34,17 @@ interface AmountInputProps {
  * than silently discarded, so the caller's existing required/positive
  * validation still catches it and shows its own message.
  */
-export function AmountInput({ id, label, value, onChange, error, required, autoFocus }: AmountInputProps) {
-  const { i18n } = useTranslation()
+export function AmountInput({
+  id,
+  label,
+  value,
+  onChange,
+  error,
+  required,
+  autoFocus,
+  placeholder,
+}: AmountInputProps) {
+  const { t, i18n } = useTranslation()
   const [displayValue, setDisplayValue] = useState(() => formatForDisplay(value, i18n.language))
   const [focused, setFocused] = useState(false)
 
@@ -73,6 +86,7 @@ export function AmountInput({ id, label, value, onChange, error, required, autoF
       autoComplete="off"
       autoFocus={autoFocus}
       required={required}
+      placeholder={placeholder ?? t('field.amountPlaceholder')}
       value={displayValue}
       onChange={handleChange}
       onFocus={handleFocus}

@@ -64,6 +64,7 @@
     "confirmPassword": "パスワード（確認）",
     "displayName": "表示名（任意）",
     "amount": "金額",
+    "amountPlaceholder": "例：1,000,000 または100万、1億",
     "date": "日付",
     "note": "メモ（任意）",
     "error": {

@@ -44,6 +44,7 @@ export function CurrencyConverter({ rate }: { rate: string | null }) {
           label={t('currency.JPY')}
           type="number"
           min="0"
+          placeholder="0"
           disabled={disabled}
           value={jpy}
           onChange={(e) => handleJpyChange(e.target.value)}
@@ -55,6 +56,7 @@ export function CurrencyConverter({ rate }: { rate: string | null }) {
           label={t('currency.VND')}
           type="number"
           min="0"
+          placeholder="0"
           disabled={disabled}
           value={vnd}
           onChange={(e) => handleVndChange(e.target.value)}

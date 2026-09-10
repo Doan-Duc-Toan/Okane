@@ -64,6 +64,7 @@
     "confirmPassword": "Xác nhận mật khẩu",
     "displayName": "Tên hiển thị (tuỳ chọn)",
     "amount": "Số tiền",
+    "amountPlaceholder": "VD: 1.000.000 hoặc 1 triệu, 1 tỷ",
     "date": "Ngày",
     "note": "Ghi chú (tuỳ chọn)",
     "error": {

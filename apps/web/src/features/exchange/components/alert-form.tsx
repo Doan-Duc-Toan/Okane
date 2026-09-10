@@ -71,6 +71,7 @@ export function AlertForm({ currentRate, onCancel, onCreated }: AlertFormProps) 
           type="number"
           min="0.00000001"
           step="0.01"
+          placeholder="168.50"
           required
           value={threshold}
           onChange={(e) => setThreshold(e.target.value)}
