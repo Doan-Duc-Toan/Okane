@@ -18,12 +18,12 @@ export class RateAlertsService {
   async create(userId: string, dto: CreateAlertDto) {
     const threshold = new Decimal(dto.threshold);
     if (!threshold.greaterThan(0)) {
-      throw new BadRequestException('threshold must be greater than 0');
+      throw new BadRequestException('alertThresholdInvalid');
     }
 
     const count = await this.prisma.rateAlert.count({ where: { userId } });
     if (count >= MAX_ALERTS_PER_USER) {
-      throw new BadRequestException(`Maximum of ${MAX_ALERTS_PER_USER} alerts per account`);
+      throw new BadRequestException('alertLimitReached');
     }
 
     return this.prisma.rateAlert.create({
@@ -42,7 +42,7 @@ export class RateAlertsService {
 
   async update(userId: string, id: string, dto: UpdateAlertDto) {
     if (dto.threshold !== undefined && !new Decimal(dto.threshold).greaterThan(0)) {
-      throw new BadRequestException('threshold must be greater than 0');
+      throw new BadRequestException('alertThresholdInvalid');
     }
 
     const result = await this.prisma.rateAlert.updateMany({
@@ -53,13 +53,13 @@ export class RateAlertsService {
         ...(dto.active !== undefined ? { active: dto.active } : {}),
       },
     });
-    if (result.count === 0) throw new NotFoundException('Alert not found');
+    if (result.count === 0) throw new NotFoundException('alertNotFound');
 
     return this.prisma.rateAlert.findFirst({ where: { id, userId } });
   }
 
   async remove(userId: string, id: string): Promise<void> {
     const result = await this.prisma.rateAlert.deleteMany({ where: { id, userId } });
-    if (result.count === 0) throw new NotFoundException('Alert not found');
+    if (result.count === 0) throw new NotFoundException('alertNotFound');
   }
 }

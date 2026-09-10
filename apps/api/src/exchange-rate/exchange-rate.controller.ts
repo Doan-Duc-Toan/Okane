@@ -26,7 +26,7 @@ export class ExchangeRateController {
   @Get('current')
   async getCurrent() {
     const current = await this.exchangeRateService.getCurrent();
-    if (!current) throw new NotFoundException('No exchange rate available yet');
+    if (!current) throw new NotFoundException('rateUnavailable');
     return current;
   }
 
@@ -39,7 +39,7 @@ export class ExchangeRateController {
   async convert(@Body() dto: ConvertDto) {
     const amount = new Decimal(dto.amount);
     if (!amount.greaterThan(0)) {
-      throw new BadRequestException('amount must be greater than 0');
+      throw new BadRequestException('entryAmountInvalid');
     }
 
     if (dto.from === dto.to) {

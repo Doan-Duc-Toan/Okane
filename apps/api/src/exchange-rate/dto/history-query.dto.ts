@@ -7,6 +7,6 @@ export const HISTORY_RANGES: HistoryRange[] = ['7d', '30d', '1y'];
 // computation — it must land in this enum-validated set first.
 export class HistoryQueryDto {
   @IsOptional()
-  @IsIn(HISTORY_RANGES)
+  @IsIn(HISTORY_RANGES, { message: 'exchangeRangeInvalid' })
   range: HistoryRange = '7d';
 }

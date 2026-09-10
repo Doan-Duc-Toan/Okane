@@ -28,12 +28,12 @@ export class SavingsEntriesService {
 
   async create(userId: string, goalId: string, dto: CreateEntryDto) {
     const goal = await this.prisma.goal.findFirst({ where: { id: goalId, userId } });
-    if (!goal) throw new NotFoundException('Goal not found');
+    if (!goal) throw new NotFoundException('goalNotFound');
 
     const entryDate = parseEntryDate(dto.entryDate);
     const amount = new Decimal(dto.amount);
     if (!amount.greaterThan(0)) {
-      throw new BadRequestException('amount must be greater than 0');
+      throw new BadRequestException('entryAmountInvalid');
     }
 
     const { amountInGoalCurrency, fxRateUsed } = await this.freeze(amount, dto.currency, goal.currency);
@@ -59,7 +59,7 @@ export class SavingsEntriesService {
     cursor?: string,
   ): Promise<{ entries: unknown[]; nextCursor: string | null }> {
     const goal = await this.prisma.goal.findFirst({ where: { id: goalId, userId }, select: { id: true } });
-    if (!goal) throw new NotFoundException('Goal not found');
+    if (!goal) throw new NotFoundException('goalNotFound');
 
     const pageSize = Math.min(limit, DEFAULT_PAGE_SIZE);
     // Fetch one extra row to know whether another page exists, per the
@@ -84,7 +84,7 @@ export class SavingsEntriesService {
       where: { id, userId },
       include: { goal: { select: { currency: true } } },
     });
-    if (!entry) throw new NotFoundException('Entry not found');
+    if (!entry) throw new NotFoundException('entryNotFound');
 
     const entryDate = dto.entryDate !== undefined ? parseEntryDate(dto.entryDate) : undefined;
     const nextAmount = dto.amount !== undefined ? new Decimal(dto.amount) : entry.amount;
@@ -105,14 +105,14 @@ export class SavingsEntriesService {
         ...(frozen ? { amountInGoalCurrency: frozen.amountInGoalCurrency, fxRateUsed: frozen.fxRateUsed } : {}),
       },
     });
-    if (result.count === 0) throw new NotFoundException('Entry not found');
+    if (result.count === 0) throw new NotFoundException('entryNotFound');
 
     return this.prisma.savingsEntry.findFirst({ where: { id, userId } });
   }
 
   async remove(userId: string, id: string): Promise<void> {
     const result = await this.prisma.savingsEntry.deleteMany({ where: { id, userId } });
-    if (result.count === 0) throw new NotFoundException('Entry not found');
+    if (result.count === 0) throw new NotFoundException('entryNotFound');
   }
 
   /** Resolves amountInGoalCurrency + fxRateUsed for a (possibly cross-currency) amount. */
@@ -141,7 +141,7 @@ function parseEntryDate(entryDate: string): Date {
   const todayUtc = Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate());
   const entryUtc = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
   if (entryUtc > todayUtc) {
-    throw new BadRequestException('entryDate must not be in the future');
+    throw new BadRequestException('entryDateFuture');
   }
   return date;
 }

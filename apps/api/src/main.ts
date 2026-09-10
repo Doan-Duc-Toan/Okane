@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
 import { PrismaClientExceptionFilter } from './common/prisma-error.filter.js';
+import { validationExceptionFactory } from './common/validation-error.factory.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +13,7 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
+      exceptionFactory: validationExceptionFactory,
     }),
   );
   // DecimalSerializerInterceptor is registered as an APP_INTERCEPTOR in

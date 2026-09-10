@@ -27,11 +27,11 @@ export class AuthService {
     const email = dto.email.toLowerCase();
     const existing = await this.usersService.findByEmailWithPassword(email);
     if (existing) {
-      throw new ConflictException('Email already registered');
+      throw new ConflictException('emailTaken');
     }
 
     const passwordHash = await bcrypt.hash(dto.password, BCRYPT_COST);
-    const user = await this.usersService.create(email, passwordHash);
+    const user = await this.usersService.create(email, passwordHash, dto.displayName);
     const tokens = await this.tokenService.issuePair(user.id, user.email);
     return { ...tokens, user };
   }
@@ -44,7 +44,7 @@ export class AuthService {
     const passwordMatches = await bcrypt.compare(dto.password, hashToCompare);
 
     if (!record || !passwordMatches) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('invalidCredentials');
     }
 
     const user = await this.usersService.findById(record.id);

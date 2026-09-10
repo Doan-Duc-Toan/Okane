@@ -72,23 +72,23 @@ export class TokenService {
     const row = await this.prisma.refreshToken.findUnique({ where: { id: payload.jti } });
 
     if (!row) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException('refreshTokenInvalid');
     }
 
     if (row.revokedAt) {
       // Reuse of an already-rotated token means it leaked — kill every
       // session for this user, not just this one token.
       await this.revokeAllForUser(row.userId);
-      throw new UnauthorizedException('Refresh token reuse detected');
+      throw new UnauthorizedException('refreshTokenReused');
     }
 
     if (row.expiresAt.getTime() < Date.now()) {
-      throw new UnauthorizedException('Refresh token expired');
+      throw new UnauthorizedException('refreshTokenExpired');
     }
 
     const valid = await bcrypt.compare(payload.s, row.tokenHash);
     if (!valid) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException('refreshTokenInvalid');
     }
 
     await this.prisma.refreshToken.update({
@@ -141,7 +141,7 @@ export class TokenService {
         secret: this.config.get<string>('JWT_REFRESH_SECRET'),
       });
     } catch {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException('refreshTokenInvalid');
     }
   }
 }

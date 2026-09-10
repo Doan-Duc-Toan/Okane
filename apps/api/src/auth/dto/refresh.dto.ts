@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
 export class RefreshDto {
-  @IsString()
+  @IsString({ message: 'refreshTokenInvalid' })
   refreshToken!: string;
 }

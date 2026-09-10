@@ -33,7 +33,7 @@ export class GoalsService {
   async create(userId: string, dto: CreateGoalDto) {
     const target = new Decimal(dto.targetAmount);
     if (!target.greaterThan(0)) {
-      throw new BadRequestException('targetAmount must be greater than 0');
+      throw new BadRequestException('goalTargetAmountInvalid');
     }
     const deadline = parseDeadline(dto.deadline);
 
@@ -67,7 +67,7 @@ export class GoalsService {
 
   async findOne(userId: string, id: string): Promise<GoalWithProgress> {
     const goal = await this.prisma.goal.findFirst({ where: { id, userId } });
-    if (!goal) throw new NotFoundException('Goal not found');
+    if (!goal) throw new NotFoundException('goalNotFound');
 
     const [sum, rate, rateAsOf] = await Promise.all([
       this.prisma.savingsEntry.aggregate({
@@ -83,7 +83,7 @@ export class GoalsService {
 
   async update(userId: string, id: string, dto: UpdateGoalDto): Promise<GoalWithProgress> {
     if (dto.targetAmount !== undefined && !new Decimal(dto.targetAmount).greaterThan(0)) {
-      throw new BadRequestException('targetAmount must be greater than 0');
+      throw new BadRequestException('goalTargetAmountInvalid');
     }
     const deadline = dto.deadline !== undefined ? parseDeadline(dto.deadline) : undefined;
 
@@ -95,20 +95,20 @@ export class GoalsService {
         ...(deadline !== undefined ? { deadline } : {}),
       },
     });
-    if (result.count === 0) throw new NotFoundException('Goal not found');
+    if (result.count === 0) throw new NotFoundException('goalNotFound');
 
     return this.findOne(userId, id);
   }
 
   async remove(userId: string, id: string): Promise<void> {
     const result = await this.prisma.goal.deleteMany({ where: { id, userId } });
-    if (result.count === 0) throw new NotFoundException('Goal not found');
+    if (result.count === 0) throw new NotFoundException('goalNotFound');
   }
 
   /** Verifies goal ownership for callers outside this service (e.g. entries). */
   async assertOwned(userId: string, goalId: string): Promise<void> {
     const goal = await this.prisma.goal.findFirst({ where: { id: goalId, userId }, select: { id: true } });
-    if (!goal) throw new NotFoundException('Goal not found');
+    if (!goal) throw new NotFoundException('goalNotFound');
   }
 
   private attachProgress(
@@ -135,7 +135,7 @@ function parseDeadline(deadline: string | undefined): Date | null {
   const todayUtc = Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate());
   const deadlineUtc = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
   if (deadlineUtc < todayUtc) {
-    throw new BadRequestException('deadline must not be in the past');
+    throw new BadRequestException('goalDeadlinePast');
   }
   return date;
 }

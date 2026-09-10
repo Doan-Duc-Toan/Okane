@@ -35,20 +35,20 @@ export class UsersService {
 
   async findById(id: string): Promise<UserProfile> {
     const user = await this.prisma.user.findUnique({ where: { id }, select: PROFILE_SELECT });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException('userNotFound');
     return user;
   }
 
-  async create(email: string, passwordHash: string): Promise<UserProfile> {
+  async create(email: string, passwordHash: string, displayName?: string): Promise<UserProfile> {
     return this.prisma.user.create({
-      data: { email: email.toLowerCase(), passwordHash },
+      data: { email: email.toLowerCase(), passwordHash, displayName: displayName ?? null },
       select: PROFILE_SELECT,
     });
   }
 
   async updateProfile(userId: string, dto: UpdateProfileDto): Promise<UserProfile> {
     const result = await this.prisma.user.updateMany({ where: { id: userId }, data: dto });
-    if (result.count === 0) throw new NotFoundException('User not found');
+    if (result.count === 0) throw new NotFoundException('userNotFound');
     return this.findById(userId);
   }
 }
