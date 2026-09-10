@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: okane
+      POSTGRES_PASSWORD: okane
+      POSTGRES_DB: okane
+    ports:
+      - "5433:5432"
+    volumes:
+      - okane-pgdata:/var/lib/postgresql/data
+      - ./docker/init-test-db.sh:/docker-entrypoint-initdb.d/init-test-db.sh
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U okane"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  okane-pgdata:
