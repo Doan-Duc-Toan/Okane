@@ -73,12 +73,17 @@
       "passwordMismatch": "パスワードが一致しません"
     }
   },
+  "currency": {
+    "JPY": "JPY（日本円）",
+    "VND": "VND（ベトナムドン）"
+  },
   "dashboard": {
     "savedJpy": "貯金額・JPY",
     "savedVnd": "貯金額・VND",
     "convertToday": "本日の JPY→VND 換算",
     "yourGoals": "あなたの目標",
     "recentActivity": "最近のアクティビティ",
+    "noActivity": "まだアクティビティがありません",
     "newGoal": "新しい目標",
     "empty": {
       "title": "まだ目標がありません",
@@ -90,7 +95,26 @@
     "back": "← ダッシュボードへ",
     "logEntry": "新しい貯金を記録",
     "addEntry": "この記録を追加",
-    "history": "履歴"
+    "history": "履歴",
+    "noEntries": "まだ記録がありません",
+    "loadMore": "もっと見る",
+    "stillNeed": "目標まであと",
+    "approxOtherCurrency": "≈ <money></money>（本日のレート、{{date}}時点）",
+    "noRateForConversion": "換算できるレートがありません",
+    "suggestedMonthly": "毎月の目安貯金額",
+    "toReachBy": "{{date}}までに達成するには",
+    "deadlineOverdue": "期限超過",
+    "goalCompleted": "目標達成しました 🎉",
+    "editGoal": "目標を編集",
+    "deleteGoal": "目標を削除",
+    "currencyLocked": "通貨は目標作成後に変更できません",
+    "deleteGoalConfirm": "この目標を削除しますか？{{count}}件の記録も削除されます。元に戻せません。",
+    "deleteEntryConfirm": "この記録を削除しますか？元に戻せません。",
+    "entryDateFuture": "未来の日付は選択できません",
+    "entryConvertedPreview": "≈ {{amount}}（現在のレート：1 JPY = {{rate}} VND）",
+    "entryNoRate": "現在換算できません — レートが未取得です。しばらくしてから再試行するか、{{currency}}で記録してください。",
+    "notFoundTitle": "目標が見つかりません",
+    "notFoundBody": "この目標は存在しないか、閲覧権限がありません。"
   },
   "exchange": {
     "sub": "参考市場レートです。送金業者の実際の取引レートではありません",
@@ -112,7 +136,9 @@
     "currency": "通貨",
     "deadline": "期限（任意）",
     "hint": "期限を設定すると、Okaneが毎月の目安貯金額を提案します。異なる通貨で貯金している場合は現在のレートで換算します。",
-    "submit": "目標を作成"
+    "submit": "目標を作成",
+    "editH1": "目標を編集",
+    "saveChanges": "変更を保存"
   },
   "smiles": {
     "outboundUrl": "https://www.smileswallet.com/japan/vi/"

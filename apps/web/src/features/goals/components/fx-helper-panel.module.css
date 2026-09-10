@@ -1,0 +1,22 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.line {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-ink-soft);
+}
+
+.emphasis {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.muted {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-ink-faint);
+}

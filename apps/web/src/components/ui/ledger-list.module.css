@@ -1,0 +1,15 @@
+.list {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.row {
+  padding: 1rem var(--space-card-padding);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.row:last-child {
+  border-bottom: none;
+}

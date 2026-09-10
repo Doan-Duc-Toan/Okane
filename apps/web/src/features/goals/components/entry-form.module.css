@@ -1,0 +1,23 @@
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.preview {
+  margin: -0.5rem 0 var(--space-field-stack);
+  font-size: var(--text-sm);
+  color: var(--color-ink-soft);
+}
+
+.error {
+  color: var(--color-alert);
+  font-size: var(--text-sm);
+  margin: 0 0 var(--space-field-stack);
+}

@@ -1,0 +1,30 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-section-gap);
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.back {
+  color: var(--color-ink-soft);
+  text-decoration: none;
+  font-size: var(--text-sm);
+}
+
+.actionsRow {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.sectionTitle {
+  margin: 0 0 1rem;
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+}
+
+.mutationError {
+  color: var(--color-alert);
+  font-size: var(--text-sm);
+  margin: 0;
+}

@@ -73,12 +73,17 @@
       "passwordMismatch": "Mật khẩu xác nhận không khớp"
     }
   },
+  "currency": {
+    "JPY": "JPY (Yên Nhật)",
+    "VND": "VND (Đồng Việt Nam)"
+  },
   "dashboard": {
     "savedJpy": "Đã tiết kiệm · JPY",
     "savedVnd": "Đã tiết kiệm · VND",
     "convertToday": "Quy đổi JPY → VND hôm nay",
     "yourGoals": "Mục tiêu của bạn",
     "recentActivity": "Hoạt động gần đây",
+    "noActivity": "Chưa có hoạt động nào",
     "newGoal": "Mục tiêu mới",
     "empty": {
       "title": "Chưa có mục tiêu nào",
@@ -90,7 +95,26 @@
     "back": "← Về tổng quan",
     "logEntry": "Ghi khoản tiết kiệm mới",
     "addEntry": "Thêm khoản này",
-    "history": "Lịch sử"
+    "history": "Lịch sử",
+    "noEntries": "Chưa có khoản ghi chép nào",
+    "loadMore": "Xem thêm",
+    "stillNeed": "Còn cần để dành",
+    "approxOtherCurrency": "≈ <money></money> theo tỷ giá hôm nay ({{date}})",
+    "noRateForConversion": "Chưa có tỷ giá để quy đổi",
+    "suggestedMonthly": "Gợi ý để dành mỗi tháng",
+    "toReachBy": "để đạt mục tiêu trước {{date}}",
+    "deadlineOverdue": "Đã quá hạn",
+    "goalCompleted": "Đã hoàn thành mục tiêu 🎉",
+    "editGoal": "Chỉnh sửa mục tiêu",
+    "deleteGoal": "Xoá mục tiêu",
+    "currencyLocked": "Loại tiền không thể thay đổi sau khi tạo mục tiêu",
+    "deleteGoalConfirm": "Xoá mục tiêu này? {{count}} khoản ghi chép sẽ bị xoá theo. Không thể khôi phục.",
+    "deleteEntryConfirm": "Xoá khoản ghi chép này? Không thể khôi phục.",
+    "entryDateFuture": "Không thể chọn ngày trong tương lai",
+    "entryConvertedPreview": "≈ {{amount}} theo tỷ giá hiện tại (1 JPY = {{rate}} VND)",
+    "entryNoRate": "Không thể quy đổi lúc này — tỷ giá chưa sẵn sàng. Vui lòng thử lại sau, hoặc ghi bằng {{currency}}.",
+    "notFoundTitle": "Không tìm thấy mục tiêu",
+    "notFoundBody": "Mục tiêu này không tồn tại hoặc bạn không có quyền xem."
   },
   "exchange": {
     "sub": "Tỷ giá thị trường tham khảo — không phải tỷ giá giao dịch thực tế của bất kỳ đơn vị chuyển tiền nào",
@@ -112,7 +136,9 @@
     "currency": "Loại tiền",
     "deadline": "Hạn chót (tuỳ chọn)",
     "hint": "Nếu đặt hạn chót, Okane sẽ tự gợi ý số tiền nên để dành mỗi tháng — và quy đổi theo tỷ giá hiện tại nếu bạn tiết kiệm bằng đồng tiền khác.",
-    "submit": "Tạo mục tiêu"
+    "submit": "Tạo mục tiêu",
+    "editH1": "Chỉnh sửa mục tiêu",
+    "saveChanges": "Lưu thay đổi"
   },
   "smiles": {
     "outboundUrl": "https://www.smileswallet.com/japan/vi/"

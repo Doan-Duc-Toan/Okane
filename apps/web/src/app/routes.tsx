@@ -2,6 +2,9 @@ import { createBrowserRouter } from 'react-router'
 import { AppShell } from '@/components/layout/app-shell'
 import { LoginPage } from '@/features/auth/login-page'
 import { RegisterPage } from '@/features/auth/register-page'
+import { DashboardPage } from '@/features/goals/dashboard-page'
+import { GoalDetailPage } from '@/features/goals/goal-detail-page'
+import { NewGoalPage } from '@/features/goals/new-goal-page'
 import { NotFoundPage } from './not-found-page'
 import { ProtectedRoute } from './protected-route'
 import { PublicOnlyRoute } from './public-only-route'
@@ -26,9 +29,9 @@ export const router = createBrowserRouter([
         element: <AppShell />,
         children: [
           // goals routes (Phase 8)
-          { path: '/', element: <RoutePlaceholder label="Dashboard" /> },
-          { path: '/goals/new', element: <RoutePlaceholder label="New Goal" /> },
-          { path: '/goals/:id', element: <RoutePlaceholder label="Goal Detail" /> },
+          { path: '/', element: <DashboardPage /> },
+          { path: '/goals/new', element: <NewGoalPage /> },
+          { path: '/goals/:id', element: <GoalDetailPage /> },
           // exchange routes (Phase 9)
           { path: '/exchange', element: <RoutePlaceholder label="Exchange & Convert" /> },
         ],

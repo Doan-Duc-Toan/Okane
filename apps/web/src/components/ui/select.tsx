@@ -11,9 +11,10 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label: string
   options: SelectOption[]
   error?: string
+  hint?: string
 }
 
-export function Select({ label, options, error, id, className, ...rest }: SelectProps) {
+export function Select({ label, options, error, hint, id, className, ...rest }: SelectProps) {
   const generatedId = useId()
   const selectId = id ?? generatedId
 
@@ -34,6 +35,7 @@ export function Select({ label, options, error, id, className, ...rest }: Select
           </option>
         ))}
       </select>
+      {hint && !error && <p className={styles.hint}>{hint}</p>}
       {error && (
         <p className={styles.error} role="alert">
           {error}
