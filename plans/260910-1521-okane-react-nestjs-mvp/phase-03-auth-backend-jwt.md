@@ -7,7 +7,7 @@
 
 ## Overview
 - **Priority:** Blocking — every user-scoped endpoint needs `req.user.sub`.
-- **Status:** pending
+- **Status:** done
 - **Effort:** 4h
 - Email/password registration and login issuing a short-lived access token plus a rotating,
   server-revocable refresh token. Global auth guard with an opt-out `@Public()` decorator.
@@ -123,17 +123,34 @@ row for a user would be O(n) hashes per refresh.
     fresh token returns the profile.
 
 ## Todo List
-- [ ] Auth dependencies installed
-- [ ] `UsersService` never selects or returns `passwordHash`
-- [ ] `TokenService` issue/rotate/revoke/revokeAll implemented
-- [ ] Register: lowercased email, bcrypt-12, P2002 → 409
-- [ ] Login: generic 401 + dummy-hash compare for timing parity
-- [ ] `JwtStrategy` + `JwtAuthGuard` registered as `APP_GUARD` with `@Public()` opt-out
-- [ ] `@CurrentUser()` decorator available for Phases 4/5
-- [ ] `PATCH /users/me` for displayName/locale/theme
-- [ ] Unit tests incl. refresh-reuse family revocation
-- [ ] e2e auth flow suite green against `okane_test`
-- [ ] Response contract matches the frozen shape above (Phase 7 depends on it)
+- [x] Auth dependencies installed
+- [x] `UsersService` never selects or returns `passwordHash`
+- [x] `TokenService` issue/rotate/revoke/revokeAll implemented
+- [x] Register: lowercased email, bcrypt-12, P2002 → 409
+- [x] Login: generic 401 + dummy-hash compare for timing parity
+- [x] `JwtStrategy` + `JwtAuthGuard` registered as `APP_GUARD` with `@Public()` opt-out
+- [x] `@CurrentUser()` decorator available for Phases 4/5
+- [x] `PATCH /users/me` for displayName/locale/theme
+- [x] Unit tests incl. refresh-reuse family revocation (`token.service.spec.ts`, 6 cases)
+- [x] e2e auth flow suite green against `okane_test` (`auth.e2e-spec.ts`, 6 cases)
+- [x] Response contract matches the frozen shape above (Phase 7 depends on it)
+
+## Deviations from the blueprint
+- **jti-as-row-id design for refresh tokens.** The schema (Phase 2) stores only `tokenHash`, not a
+  separate `jti` column. To get the "indexed single-row read on refresh" property the blueprint
+  calls for without adding a column, the `RefreshToken.id` itself is used as the JWT's `jti` claim
+  (generated client-side as a UUID, passed to Prisma's `create` as an explicit `id`). A short opaque
+  per-token secret (`s`, 32 random bytes, base64url) is embedded in the refresh JWT and `bcrypt.hash(s)`
+  is what's stored as `tokenHash` — hashing the *whole* JWT would risk silently exceeding bcrypt's
+  72-byte input limit.
+- **`ConfigModule.forRoot` gained `envFilePath` branching on `NODE_ENV`** (`.env.test` under test,
+  `.env` otherwise) — not explicit in the blueprint but required for e2e suites to run against
+  `okane_test` rather than the dev database; `test:e2e` now sets `NODE_ENV=test`.
+- **`AppController`'s root `GET /` route marked `@Public()`.** It predates this phase (Phase 1
+  scaffold) and had no opt-out; once the global guard landed it would 401 with no user-facing
+  benefit (it's a bare health-check route, not user data), which also broke the pre-existing
+  `test/app.e2e-spec.ts`. Marking it `@Public()` was more correct than leaving a placeholder route
+  guarded or rewriting that test to assert 401.
 
 ## Success Criteria
 - Full flow passes in the e2e suite: register → protected read → refresh → old-token rejection →
