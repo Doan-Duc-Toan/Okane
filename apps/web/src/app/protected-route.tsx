@@ -4,7 +4,7 @@ import { Spinner } from '@/components/ui/spinner'
 
 /** No session → redirect to /login, preserving the intended destination. */
 export function ProtectedRoute() {
-  const { status } = useAuth()
+  const { status, sessionExpired } = useAuth()
   const location = useLocation()
 
   if (status === 'restoring') {
@@ -12,7 +12,8 @@ export function ProtectedRoute() {
   }
 
   if (status === 'guest') {
-    return <Navigate to="/login" replace state={{ from: location }} />
+    const to = sessionExpired ? '/login?reason=expired' : '/login'
+    return <Navigate to={to} replace state={{ from: location }} />
   }
 
   return <Outlet />

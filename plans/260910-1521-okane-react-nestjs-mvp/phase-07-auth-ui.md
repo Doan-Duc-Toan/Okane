@@ -8,7 +8,7 @@
 
 ## Overview
 - **Priority:** Blocking for Phases 8/9 in practice — every other screen sits behind the session.
-- **Status:** pending
+- **Status:** done
 - **Effort:** 3h
 - The Login and Register screens, wired to the auth API, with the session lifecycle handled
   end to end (silent restore, expiry, logout).
@@ -99,18 +99,32 @@ boot ─▶ refresh token present? → silent refresh → session restored, else
     sign out → `/` redirects to `/login` → sign in again → back to the dashboard.
 
 ## Todo List
-- [ ] `auth.api.ts` typed against the frozen contract
-- [ ] Shared `AuthCard`; Login and Register both built on it
-- [ ] Login: generic error, pending-disabled submit, correct `autoComplete`
-- [ ] Google button rendered disabled with a "coming soon" label — no handler
-- [ ] Register: confirm-password match, 409 → email field error
-- [ ] Session stored via `AuthContext`; server `locale`/`theme` adopted on login
-- [ ] Redirect back to the originally requested route
-- [ ] Authenticated users bounced off `/login` and `/register`
-- [ ] Sign-out: server revoke + local clear + `queryClient.clear()`
-- [ ] `?reason=expired` notice
-- [ ] VI/JA strings complete for both screens
-- [ ] Manual flow verified end to end incl. reload persistence
+- [x] `auth.api.ts` typed against the frozen contract
+- [x] Shared `AuthCard`; Login and Register both built on it
+- [x] Login: generic error, pending-disabled submit, correct `autoComplete`
+- [x] Google button rendered disabled with a "coming soon" label — no handler
+- [x] Register: confirm-password match, 409 → email field error
+- [x] Session stored via `AuthContext`; server `locale`/`theme` adopted on login
+- [x] Redirect back to the originally requested route
+- [x] Authenticated users bounced off `/login` and `/register`
+- [x] Sign-out: server revoke + local clear + `queryClient.clear()`
+- [x] `?reason=expired` notice
+- [x] VI/JA strings complete for both screens
+- [x] Manual flow verified end to end incl. reload persistence
+
+**Verification notes (2026-09-10):** the real Phase 3 backend landed in `apps/api` while this
+phase was being built, so this was verified against the **live** API (not mocked) via a headless
+Puppeteer E2E run: register with a fresh email → landed on `/` (authenticated shell renders,
+`Đăng xuất` in nav) → hard reload → still signed in (silent refresh confirmed against the real
+`/api/auth/refresh`) → sign out → redirected to `/login`. Also verified: unknown-email and
+wrong-password both render the identical generic message; a duplicate `POST /auth/register` maps
+its 409 to the email field (`"Email này đã được đăng ký"`) and keeps the user on `/register`; a
+weak password (`"short"`) is blocked client-side with no network round-trip. Zero console errors,
+zero failed requests across all runs. One addition beyond the phase file's original component
+tree: the language/theme toggle cluster (fixed top-right) was added to `AuthCard`, since Phase 6's
+requirement that "VI/JA toggle... applied without a reload" and the mockup's toggle placement
+aren't gated to authenticated screens — a guest must be able to pick their language before
+registering. `pnpm --filter web build`, `test` (7/7), and `lint` all pass.
 
 ## Success Criteria
 - Register → dashboard → hard reload → still signed in (silent refresh working).

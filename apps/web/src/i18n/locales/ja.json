@@ -45,8 +45,17 @@
     "google": "Googleでログイン",
     "googleComingSoon": "近日公開",
     "createAccount": "新しいアカウントを作成",
+    "backToLogin": "すでにアカウントをお持ちですか？ログイン",
     "error": {
-      "invalidCredentials": "メールアドレスまたはパスワードが正しくありません"
+      "invalidCredentials": "メールアドレスまたはパスワードが正しくありません",
+      "network": "サーバーに接続できません。もう一度お試しください。"
+    }
+  },
+  "register": {
+    "h1": "Okaneのアカウントを作成",
+    "submit": "登録する",
+    "error": {
+      "emailTaken": "このメールアドレスはすでに登録されています"
     }
   },
   "field": {
@@ -56,7 +65,13 @@
     "displayName": "表示名（任意）",
     "amount": "金額",
     "date": "日付",
-    "note": "メモ（任意）"
+    "note": "メモ（任意）",
+    "error": {
+      "required": "この項目は必須です",
+      "emailInvalid": "メールアドレスの形式が正しくありません",
+      "passwordTooWeak": "パスワードは8文字以上で、英字と数字を含めてください",
+      "passwordMismatch": "パスワードが一致しません"
+    }
   },
   "dashboard": {
     "savedJpy": "貯金額・JPY",
