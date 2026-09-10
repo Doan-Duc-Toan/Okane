@@ -19,7 +19,7 @@ verbatim into the React app's token file; do not invent new values.
 :root {
   --ink: #1c2430;
   --ink-soft: #5b6472;
-  --ink-faint: #8a8f7c;
+  --ink-faint: #6e7261; /* corrected in Phase 10: original #8a8f7c was 3.03:1 on --paper, fails WCAG AA (4.5:1) for body text */
   --paper: #f7f4ec;
   --surface: #fffdf8;
   --line: #e2dcc9;
@@ -37,7 +37,7 @@ verbatim into the React app's token file; do not invent new values.
    and again under data-theme="dark" (explicit toggle wins either direction) */
 --ink: #ece7da;
 --ink-soft: #aba497;
---ink-faint: #767065;
+--ink-faint: #847e71; /* corrected in Phase 10: original #767065 was 3.72:1 on --paper, fails WCAG AA (4.5:1) for body text */
 --paper: #12151c;
 --surface: #1a1e27;
 --line: #2b2f3a;

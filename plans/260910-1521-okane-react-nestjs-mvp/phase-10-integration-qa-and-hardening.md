@@ -7,7 +7,9 @@
 
 ## Overview
 - **Priority:** Blocking for "MVP done".
-- **Status:** pending
+- **Status:** done — one real defect found and fixed (contrast); several journeys/sweeps rest on
+  the QA agent's report without independent re-verification this pass (see Todo List legend below
+  for exactly which). Docs (README, system-architecture, changelog, roadmap) written separately.
 - **Effort:** 2h
 - Close the seams between the two tracks, run the full test matrix, walk the real user journeys,
   and complete the security and documentation checklist. No new features.
@@ -110,20 +112,52 @@ money math, FX math, and per-user data isolation.
 15. Flip every phase's Status to `completed` in plan.md (`ck` is not installed — edit the table directly).
 
 ## Todo List
-- [ ] Three seams verified (ticker, entry conversion, Decimal serialization)
-- [ ] `pnpm -r test` green; API e2e green on a fresh `okane_test`
-- [ ] `pnpm build` green in both workspaces, no new `@ts-ignore`
-- [ ] Journey 1 on an **empty** database
-- [ ] Journeys 2, 3, 5 on seeded data
-- [ ] Journey 4 (FX degraded) — nothing 500s
-- [ ] i18n sweep: no untranslated literal in JA; no clipped text
-- [ ] Accessibility sweep: keyboard, focus, labels, Lighthouse
-- [ ] Contrast verified in both themes
-- [ ] Security checklist all boxes ticked
-- [ ] Responsive at 375 / 768 / 1440
-- [ ] README with setup + troubleshooting
-- [ ] `docs/system-architecture.md`, changelog entry, roadmap updated
-- [ ] plan.md statuses updated; backlog recorded
+- [x] Three seams verified (ticker, entry conversion, Decimal serialization)
+- [x] `pnpm -r test` green (53/53); API e2e green (25/25) — re-run independently by the
+      orchestrator against a running `okane_test`, not just taken on the QA agent's word
+- [x] `pnpm build` green in both workspaces, no new `@ts-ignore`
+- [~] Journey 1 on an **empty** database — QA agent reports pass; not independently re-walked
+- [~] Journeys 2, 3, 5 on seeded data — QA agent reports pass; isolation (Journey 5) independently
+      re-verified live (see notes below); 2 and 3 not independently re-walked
+- [~] Journey 4 (FX degraded) — QA agent's own report says this was "code verified", not run live;
+      not independently re-run this pass either. Treat as **medium confidence**, not proven.
+- [~] i18n sweep: no untranslated literal in JA; no clipped text — QA agent reports pass
+      (135 keys, both locale files present and parallel); not independently re-walked screen by screen
+- [~] Accessibility sweep: keyboard, focus, labels — QA agent reports pass via static/DOM inspection
+      (no real Lighthouse run available in this environment; agent was explicit about that limitation)
+- [x] Contrast verified in both themes — **QA agent's check was incomplete**: it computed the
+      vermilion-alert contrast correctly (verified: 4.86:1 light / 6.99:1 dark, both ≥ AA) but did
+      not check `--ink-faint`, which is used as real small body text (`--text-xs`/`--text-sm`) across
+      goal cards, entry history, recent activity, fx-helper notes, and input hints. Independently
+      computed: `--ink-faint` was **3.03:1 (light) / 3.72:1 (dark) — fails WCAG AA (4.5:1) for normal
+      text on both themes.** Fixed by darkening/lightening within the same hue: light
+      `#8a8f7c → #6e7261` (4.50:1), dark `#767065 → #847e71` (4.53:1). Updated in
+      `apps/web/src/styles/tokens.css` and the source-of-truth `mockup-design-tokens.md` so the
+      correction doesn't get reverted by a future read of that file. Rebuilt clean after the change.
+- [x] Security checklist — independently re-verified a representative subset live rather than
+      trusting the report wholesale: `.env` absent from git history (confirmed), no
+      `dangerouslySetInnerHTML` anywhere in `apps/web/src` or `apps/api/src` (confirmed by grep),
+      access token kept in an in-memory module variable in `apps/web/src/lib/api-client.ts` — never
+      in `localStorage` (only `refreshToken` is, matching the documented design) — confirmed by grep,
+      cross-user isolation confirmed live (registered two real users, user B got a clean 404 on
+      user A's goal ID), and the global `ValidationPipe` whitelist confirmed live (a register request
+      with an extra `name` field was rejected with "property name should not exist"). Did not
+      independently re-check the remaining items (logout server-side revocation, no credential/full
+      FX payload logged) — resting on the QA agent's report for those.
+- [~] Responsive at 375 / 768 / 1440 — QA agent reports pass via CSS/media-query inspection (52
+      flex/grid rules found); no real viewport-resize verification available in this environment
+- [ ] README with setup + troubleshooting — being written now by the orchestrator (see plan.md)
+- [ ] `docs/system-architecture.md`, changelog entry, roadmap updated — same
+- [ ] plan.md statuses updated; backlog recorded — same
+
+**Legend:** `[x]` = independently confirmed true (by this session, not just reported). `[~]` = the
+QA agent reported a pass; not independently re-verified this pass — treat as reported-but-unaudited,
+not proven. `[ ]` = not yet done. **Orchestrator's note on process:** the QA agent's own report was
+polished and used specific, checkable numbers — the ones spot-checked (test counts, both contrast
+ratios it did compute, isolation, Decimal serialization) all came back **exactly correct**, so its
+work was not fabricated. But it did not update this file's Todo list at all (still all `[ ]` when
+checked), and its contrast check covered one color pair instead of a full sweep, missing a real AA
+failure. Read its "zero defects, ready for deployment" framing as optimistic rather than settled.
 
 ## Success Criteria
 - A fresh clone reaches a working app with the README alone — verify by following it literally,
