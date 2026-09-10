@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { Card } from '@/components/ui/card'
+import { ApiError } from '@/lib/api-client'
 import { useCreateGoal } from './hooks/use-goal-mutations'
 import { GoalForm } from './components/goal-form'
 
@@ -29,7 +30,8 @@ export function NewGoalPage() {
             { name, targetAmount, currency, deadline },
             {
               onSuccess: (goal) => navigate(`/goals/${goal.id}`),
-              onError: () => setError(t('common.somethingWrong')),
+              onError: (err) =>
+                setError(err instanceof ApiError ? err.message : t('common.somethingWrong')),
             },
           )
         }}

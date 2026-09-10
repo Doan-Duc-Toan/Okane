@@ -35,17 +35,33 @@ export function EntryForm({ goalId, goalCurrency, progress }: EntryFormProps) {
   const [currency, setCurrency] = useState<Currency>(goalCurrency)
   const [entryDate, setEntryDate] = useState(today())
   const [note, setNote] = useState('')
+  const [amountError, setAmountError] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const rate = progress.rateUsed ? Number(progress.rateUsed) : null
   const crossCurrency = currency !== goalCurrency
   const amountNumber = Number(amount)
   const showPreview = crossCurrency && amount && !Number.isNaN(amountNumber) && rate !== null
+  const dateInFuture = entryDate > today()
+
+  function validate(): boolean {
+    setAmountError(null)
+    if (!amount.trim()) {
+      setAmountError(t('field.error.required'))
+      return false
+    }
+    if (!Number.isFinite(amountNumber) || amountNumber <= 0) {
+      setAmountError(t('newGoal.error.amountInvalid'))
+      return false
+    }
+    return true
+  }
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    if (createEntry.isPending) return
+    if (createEntry.isPending || dateInFuture) return
     setError(null)
+    if (!validate()) return
 
     createEntry.mutate(
       { amount, currency, entryDate, note: note || undefined },
@@ -58,6 +74,8 @@ export function EntryForm({ goalId, goalCurrency, progress }: EntryFormProps) {
         onError: (err) => {
           if (err instanceof ApiError && err.status === 503) {
             setError(t('goal.entryNoRate', { currency: goalCurrency }))
+          } else if (err instanceof ApiError) {
+            setError(err.message)
           } else {
             setError(t('common.somethingWrong'))
           }
@@ -78,6 +96,7 @@ export function EntryForm({ goalId, goalCurrency, progress }: EntryFormProps) {
           required
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
+          error={amountError ?? undefined}
         />
         <Select
           label={t('newGoal.currency')}
@@ -108,7 +127,7 @@ export function EntryForm({ goalId, goalCurrency, progress }: EntryFormProps) {
         max={today()}
         value={entryDate}
         onChange={(e) => setEntryDate(e.target.value)}
-        error={entryDate > today() ? t('goal.entryDateFuture') : undefined}
+        error={dateInFuture ? t('goal.entryDateFuture') : undefined}
       />
       <Input label={t('field.note')} type="text" value={note} onChange={(e) => setNote(e.target.value)} />
       {error && (
@@ -116,7 +135,7 @@ export function EntryForm({ goalId, goalCurrency, progress }: EntryFormProps) {
           {error}
         </p>
       )}
-      <Button type="submit" disabled={createEntry.isPending || entryDate > today()}>
+      <Button type="submit" disabled={createEntry.isPending || dateInFuture}>
         {t('goal.addEntry')}
       </Button>
     </form>

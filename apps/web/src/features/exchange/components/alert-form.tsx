@@ -21,6 +21,7 @@ export function AlertForm({ currentRate, onCancel, onCreated }: AlertFormProps) 
   const createAlert = useCreateAlert()
   const [direction, setDirection] = useState<AlertDirection>('ABOVE')
   const [threshold, setThreshold] = useState('')
+  const [thresholdError, setThresholdError] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const thresholdNumber = Number(threshold)
@@ -36,6 +37,11 @@ export function AlertForm({ currentRate, onCancel, onCreated }: AlertFormProps) 
     e.preventDefault()
     if (createAlert.isPending) return
     setError(null)
+    setThresholdError(null)
+    if (!threshold.trim() || !Number.isFinite(thresholdNumber) || thresholdNumber <= 0) {
+      setThresholdError(t('newGoal.error.amountInvalid'))
+      return
+    }
     createAlert.mutate(
       { direction, threshold },
       {
@@ -68,6 +74,7 @@ export function AlertForm({ currentRate, onCancel, onCreated }: AlertFormProps) 
           required
           value={threshold}
           onChange={(e) => setThreshold(e.target.value)}
+          error={thresholdError ?? undefined}
         />
       </div>
       {preview && <p className={styles.preview}>{preview}</p>}

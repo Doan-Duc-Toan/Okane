@@ -18,6 +18,8 @@ interface LocationState {
   from?: { pathname: string }
 }
 
+const EMAIL_RULE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 export function LoginPage() {
   const { t, i18n } = useTranslation()
   const { login } = useAuth()
@@ -30,9 +32,30 @@ export function LoginPage() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const [emailError, setEmailError] = useState<string | null>(null)
+  const [passwordError, setPasswordError] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
 
   const sessionExpiredNotice = searchParams.get('reason') === 'expired'
+
+  function validate(): boolean {
+    let valid = true
+    setEmailError(null)
+    setPasswordError(null)
+
+    if (!email.trim()) {
+      setEmailError(t('field.error.required'))
+      valid = false
+    } else if (!EMAIL_RULE.test(email)) {
+      setEmailError(t('field.error.emailInvalid'))
+      valid = false
+    }
+    if (!password) {
+      setPasswordError(t('field.error.required'))
+      valid = false
+    }
+    return valid
+  }
 
   // The server-stored locale/theme represents the user's cross-device choice
   // (set via PATCH /users/me elsewhere in the app) — adopt it on sign-in when
@@ -49,7 +72,8 @@ export function LoginPage() {
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
     if (loginMutation.isPending) return
-    setError(null)
+    setFormError(null)
+    if (!validate()) return
 
     loginMutation.mutate(
       { email, password },
@@ -64,11 +88,11 @@ export function LoginPage() {
         },
         onError: (err) => {
           if (err instanceof ApiError) {
-            setError(err.status === 401 ? t('login.error.invalidCredentials') : err.message)
+            setFormError(err.status === 401 ? t('login.error.invalidCredentials') : err.message)
           } else {
             // A real fetch-level failure (server unreachable, DNS, etc.) — the
             // one case this message is actually true for.
-            setError(t('login.error.network'))
+            setFormError(t('login.error.network'))
           }
         },
       },
@@ -83,6 +107,11 @@ export function LoginPage() {
       </section>
       <AuthCard active="login" title={t('login.welcome')}>
         {sessionExpiredNotice && <p className={styles.notice}>{t('common.sessionExpired')}</p>}
+        {formError && (
+          <p className={styles.formError} role="alert">
+            {formError}
+          </p>
+        )}
         <form onSubmit={handleSubmit} noValidate>
           <Input
             label={t('field.email')}
@@ -92,6 +121,7 @@ export function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            error={emailError ?? undefined}
           />
           <Input
             label={t('field.password')}
@@ -101,7 +131,7 @@ export function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            error={error ?? undefined}
+            error={passwordError ?? undefined}
           />
           <Button type="submit" disabled={loginMutation.isPending} style={{ width: '100%' }}>
             {t('login.submit')}

@@ -1,0 +1,8 @@
+.formError {
+  background: var(--color-alert-soft);
+  color: var(--color-alert);
+  border-radius: var(--radius-control);
+  padding: 0.6rem 0.85rem;
+  font-size: var(--text-sm);
+  margin: 0 0 1rem;
+}

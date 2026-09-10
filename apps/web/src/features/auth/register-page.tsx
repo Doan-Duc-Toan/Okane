@@ -9,9 +9,14 @@ import { useAuth } from '@/contexts/auth-context'
 import { ApiError } from '@/lib/api-client'
 import { AuthCard } from './components/auth-card'
 import { useRegister } from './hooks/use-register'
+import styles from './register-page.module.css'
 
 // Mirrors the server's rule (Phase 3): min 8 chars, at least one letter and one digit.
 const PASSWORD_RULE = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/
+// Deliberately permissive (matches the server's class-validator @IsEmail check
+// in spirit, not character-for-character) — good enough to catch the common
+// "forgot the @" typo client-side; the server is still the source of truth.
+const EMAIL_RULE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export function RegisterPage() {
   const { t } = useTranslation()
@@ -27,13 +32,22 @@ export function RegisterPage() {
   const [emailError, setEmailError] = useState<string | null>(null)
   const [passwordError, setPasswordError] = useState<string | null>(null)
   const [confirmError, setConfirmError] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
 
   function validate(): boolean {
     let valid = true
+    setFormError(null)
     setEmailError(null)
     setPasswordError(null)
     setConfirmError(null)
 
+    if (!email.trim()) {
+      setEmailError(t('field.error.required'))
+      valid = false
+    } else if (!EMAIL_RULE.test(email)) {
+      setEmailError(t('field.error.emailInvalid'))
+      valid = false
+    }
     if (!PASSWORD_RULE.test(password)) {
       setPasswordError(t('field.error.passwordTooWeak'))
       valid = false
@@ -63,12 +77,15 @@ export function RegisterPage() {
             if (err.status === 409) {
               setEmailError(t('register.error.emailTaken'))
             } else {
-              setPasswordError(err.message)
+              // Any other server rejection (a validation rule the client
+              // didn't anticipate, etc.) — not a specific field, so it goes
+              // in the form-level banner rather than guessed onto one input.
+              setFormError(err.message)
             }
           } else {
             // A real fetch-level failure (server unreachable, DNS, etc.) — the
             // one case this message is actually true for.
-            setPasswordError(t('login.error.network'))
+            setFormError(t('login.error.network'))
           }
         },
       },
@@ -77,6 +94,11 @@ export function RegisterPage() {
 
   return (
     <AuthCard active="register" title={t('register.h1')}>
+      {formError && (
+        <p className={styles.formError} role="alert">
+          {formError}
+        </p>
+      )}
       <form onSubmit={handleSubmit} noValidate>
         <Input
           label={t('field.email')}

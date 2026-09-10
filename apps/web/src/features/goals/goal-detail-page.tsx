@@ -87,7 +87,8 @@ export function GoalDetailPage() {
                 { name, targetAmount, deadline: deadline ?? null },
                 {
                   onSuccess: () => setEditing(false),
-                  onError: () => setMutationError(t('common.somethingWrong')),
+                  onError: (err) =>
+                    setMutationError(err instanceof ApiError ? err.message : t('common.somethingWrong')),
                 },
               )
             }}
@@ -126,8 +127,8 @@ export function GoalDetailPage() {
           onConfirm={() =>
             deleteGoal.mutate(id, {
               onSuccess: () => navigate('/'),
-              onError: () => {
-                setMutationError(t('common.somethingWrong'))
+              onError: (err) => {
+                setMutationError(err instanceof ApiError ? err.message : t('common.somethingWrong'))
                 setConfirmingDelete(false)
               },
             })

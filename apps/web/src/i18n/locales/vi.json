@@ -165,9 +165,50 @@
     "hint": "Nếu đặt hạn chót, Okane sẽ tự gợi ý số tiền nên để dành mỗi tháng — và quy đổi theo tỷ giá hiện tại nếu bạn tiết kiệm bằng đồng tiền khác.",
     "submit": "Tạo mục tiêu",
     "editH1": "Chỉnh sửa mục tiêu",
-    "saveChanges": "Lưu thay đổi"
+    "saveChanges": "Lưu thay đổi",
+    "error": {
+      "nameTooLong": "Tên mục tiêu không được quá 80 ký tự",
+      "amountInvalid": "Số tiền phải lớn hơn 0"
+    }
   },
   "smiles": {
     "outboundUrl": "https://www.smileswallet.com/japan/vi/"
+  },
+  "apiError": {
+    "emailInvalid": "Email không hợp lệ",
+    "passwordTooShort": "Mật khẩu cần tối thiểu 8 ký tự",
+    "passwordTooLong": "Mật khẩu quá dài",
+    "passwordWeak": "Mật khẩu cần gồm cả chữ và số",
+    "passwordRequired": "Vui lòng nhập mật khẩu",
+    "displayNameInvalid": "Tên hiển thị không hợp lệ",
+    "displayNameTooLong": "Tên hiển thị không được quá 80 ký tự",
+    "goalNameInvalid": "Tên mục tiêu không được để trống và tối đa 80 ký tự",
+    "goalTargetAmountInvalid": "Số tiền mục tiêu phải lớn hơn 0",
+    "goalCurrencyInvalid": "Loại tiền không hợp lệ",
+    "goalDeadlineInvalid": "Ngày hạn chót không hợp lệ",
+    "goalDeadlinePast": "Hạn chót không được ở trong quá khứ",
+    "goalNotFound": "Không tìm thấy mục tiêu này",
+    "entryAmountInvalid": "Số tiền phải lớn hơn 0",
+    "entryDateInvalid": "Ngày không hợp lệ",
+    "entryDateFuture": "Ngày ghi chép không được ở trong tương lai",
+    "entryNoteTooLong": "Ghi chú không được quá 500 ký tự",
+    "entryNotFound": "Không tìm thấy khoản ghi chép này",
+    "alertDirectionInvalid": "Điều kiện cảnh báo không hợp lệ",
+    "alertThresholdInvalid": "Ngưỡng tỷ giá phải lớn hơn 0",
+    "alertActiveInvalid": "Trạng thái cảnh báo không hợp lệ",
+    "alertLimitReached": "Bạn chỉ có thể tạo tối đa 10 cảnh báo",
+    "alertNotFound": "Không tìm thấy cảnh báo này",
+    "exchangeRangeInvalid": "Khoảng thời gian không hợp lệ",
+    "rateUnavailable": "Chưa có tỷ giá khả dụng",
+    "localeInvalid": "Ngôn ngữ không hợp lệ",
+    "themeInvalid": "Giao diện không hợp lệ",
+    "refreshTokenInvalid": "Phiên đăng nhập không hợp lệ",
+    "refreshTokenReused": "Phiên đăng nhập có dấu hiệu bất thường, vui lòng đăng nhập lại",
+    "refreshTokenExpired": "Phiên đăng nhập đã hết hạn",
+    "emailTaken": "Email này đã được đăng ký",
+    "invalidCredentials": "Email hoặc mật khẩu không đúng",
+    "userNotFound": "Không tìm thấy tài khoản này",
+    "unexpectedField": "Yêu cầu chứa dữ liệu không hợp lệ",
+    "invalidRequest": "Yêu cầu không hợp lệ"
   }
 }

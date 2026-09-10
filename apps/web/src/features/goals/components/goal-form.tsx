@@ -32,12 +32,41 @@ export function GoalForm({ mode, initialValues, submitting, onSubmit, onCancel }
   const [targetAmount, setTargetAmount] = useState(initialValues?.targetAmount ?? '')
   const [currency, setCurrency] = useState<Currency>(initialValues?.currency ?? 'JPY')
   const [deadline, setDeadline] = useState(initialValues?.deadline ?? '')
+  const [nameError, setNameError] = useState<string | null>(null)
+  const [amountError, setAmountError] = useState<string | null>(null)
+
+  function validate(): boolean {
+    let valid = true
+    setNameError(null)
+    setAmountError(null)
+
+    const trimmedName = name.trim()
+    if (!trimmedName) {
+      setNameError(t('field.error.required'))
+      valid = false
+    } else if (trimmedName.length > 80) {
+      setNameError(t('newGoal.error.nameTooLong'))
+      valid = false
+    }
+
+    const amount = Number(targetAmount)
+    if (!targetAmount.trim()) {
+      setAmountError(t('field.error.required'))
+      valid = false
+    } else if (!Number.isFinite(amount) || amount <= 0) {
+      setAmountError(t('newGoal.error.amountInvalid'))
+      valid = false
+    }
+
+    return valid
+  }
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
     if (submitting) return
+    if (!validate()) return
     onSubmit({
-      name,
+      name: name.trim(),
       // Kept as the raw string the user typed — never coerced to Number
       // before it reaches the API (Phase 4's money-as-string rule).
       targetAmount,
@@ -55,6 +84,7 @@ export function GoalForm({ mode, initialValues, submitting, onSubmit, onCancel }
         maxLength={80}
         value={name}
         onChange={(e) => setName(e.target.value)}
+        error={nameError ?? undefined}
       />
       <Input
         label={t('newGoal.target')}
@@ -64,6 +94,7 @@ export function GoalForm({ mode, initialValues, submitting, onSubmit, onCancel }
         required
         value={targetAmount}
         onChange={(e) => setTargetAmount(e.target.value)}
+        error={amountError ?? undefined}
       />
       <Select
         label={t('newGoal.currency')}

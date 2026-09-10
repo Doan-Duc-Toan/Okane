@@ -165,9 +165,50 @@
     "hint": "期限を設定すると、Okaneが毎月の目安貯金額を提案します。異なる通貨で貯金している場合は現在のレートで換算します。",
     "submit": "目標を作成",
     "editH1": "目標を編集",
-    "saveChanges": "変更を保存"
+    "saveChanges": "変更を保存",
+    "error": {
+      "nameTooLong": "目標の名前は80文字以内で入力してください",
+      "amountInvalid": "金額は0より大きい値を入力してください"
+    }
   },
   "smiles": {
     "outboundUrl": "https://www.smileswallet.com/japan/vi/"
+  },
+  "apiError": {
+    "emailInvalid": "メールアドレスの形式が正しくありません",
+    "passwordTooShort": "パスワードは8文字以上で入力してください",
+    "passwordTooLong": "パスワードが長すぎます",
+    "passwordWeak": "パスワードは英字と数字を含めてください",
+    "passwordRequired": "パスワードを入力してください",
+    "displayNameInvalid": "表示名の形式が正しくありません",
+    "displayNameTooLong": "表示名は80文字以内で入力してください",
+    "goalNameInvalid": "目標の名前を入力してください（80文字以内）",
+    "goalTargetAmountInvalid": "目標金額は0より大きい値を入力してください",
+    "goalCurrencyInvalid": "通貨の指定が正しくありません",
+    "goalDeadlineInvalid": "期限の形式が正しくありません",
+    "goalDeadlinePast": "期限は過去の日付にできません",
+    "goalNotFound": "この目標が見つかりません",
+    "entryAmountInvalid": "金額は0より大きい値を入力してください",
+    "entryDateInvalid": "日付の形式が正しくありません",
+    "entryDateFuture": "記録日は未来の日付にできません",
+    "entryNoteTooLong": "メモは500文字以内で入力してください",
+    "entryNotFound": "この記録が見つかりません",
+    "alertDirectionInvalid": "アラートの条件が正しくありません",
+    "alertThresholdInvalid": "しきい値は0より大きい値を入力してください",
+    "alertActiveInvalid": "アラートの状態が正しくありません",
+    "alertLimitReached": "アラートは最大10件まで作成できます",
+    "alertNotFound": "このアラートが見つかりません",
+    "exchangeRangeInvalid": "期間の指定が正しくありません",
+    "rateUnavailable": "現在利用できるレートがありません",
+    "localeInvalid": "言語の指定が正しくありません",
+    "themeInvalid": "テーマの指定が正しくありません",
+    "refreshTokenInvalid": "セッションが無効です",
+    "refreshTokenReused": "セッションに異常を検知しました。再度ログインしてください",
+    "refreshTokenExpired": "セッションの有効期限が切れました",
+    "emailTaken": "このメールアドレスは既に登録されています",
+    "invalidCredentials": "メールアドレスまたはパスワードが正しくありません",
+    "userNotFound": "このアカウントが見つかりません",
+    "unexpectedField": "リクエストの内容が正しくありません",
+    "invalidRequest": "リクエストが正しくありません"
   }
 }
