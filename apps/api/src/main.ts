@@ -1,6 +1,8 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
+import { DecimalSerializerInterceptor } from './common/decimal.serializer.interceptor.js';
+import { PrismaClientExceptionFilter } from './common/prisma-error.filter.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,6 +15,9 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  app.useGlobalInterceptors(new DecimalSerializerInterceptor());
+  app.useGlobalFilters(new PrismaClientExceptionFilter());
+  app.enableShutdownHooks();
 
   const corsOrigins = process.env.CORS_ORIGINS;
   if (corsOrigins) {

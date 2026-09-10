@@ -40,7 +40,7 @@ Context: [brainstorm](../reports/brainstorm-260909-1453-savings-app-idea.md) ·
 | # | Phase | Status | Effort | File |
 |---|-------|--------|--------|------|
 | 1 | Monorepo scaffold & local dev environment | done | 2h | [phase-01-monorepo-scaffold-and-dev-environment.md](phase-01-monorepo-scaffold-and-dev-environment.md) |
-| 2 | Prisma schema & data-isolation foundation | pending | 3h | [phase-02-prisma-schema-and-data-isolation.md](phase-02-prisma-schema-and-data-isolation.md) |
+| 2 | Prisma schema & data-isolation foundation | done — pinned Prisma 6.19.3, see phase notes | 3h | [phase-02-prisma-schema-and-data-isolation.md](phase-02-prisma-schema-and-data-isolation.md) |
 | 3 | Auth backend (JWT access + refresh) | pending | 4h | [phase-03-auth-backend-jwt.md](phase-03-auth-backend-jwt.md) |
 | 4 | Goals & savings entries backend + goal math | pending | 6h | [phase-04-goals-and-entries-backend.md](phase-04-goals-and-entries-backend.md) |
 | 5 | Exchange-rate backend (provider, cron, history, alerts) | pending | 5h | [phase-05-exchange-rate-backend.md](phase-05-exchange-rate-backend.md) |

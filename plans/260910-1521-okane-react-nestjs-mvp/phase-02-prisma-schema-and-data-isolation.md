@@ -8,7 +8,7 @@
 
 ## Overview
 - **Priority:** Blocking — Phases 3, 4, 5 all read this schema.
-- **Status:** pending
+- **Status:** done — see deviations note below
 - **Effort:** 3h
 - Define the **complete MVP schema in one migration**, wire `PrismaModule`, and establish the
   per-user data-isolation pattern that every later service must follow.
@@ -129,15 +129,35 @@ HTTP req → JwtAuthGuard (Phase 3) → @CurrentUser() userId → Service (adds 
    `prisma migrate status` reports no drift.
 
 ## Todo List
-- [ ] Prisma + client installed; `prisma init` done; `DATABASE_URL` wired
-- [ ] Full 6-model schema written with enums, indexes, and the `(base,quote,capturedOn)` unique
-- [ ] `init_okane_schema` migration applied cleanly to an empty DB
-- [ ] `PrismaService` + global `PrismaModule`; shutdown hooks in `main.ts`
-- [ ] Decimal→string response interceptor registered and verified on a real response body
-- [ ] Prisma exception filter mapping P2002/P2025
-- [ ] Idempotent seed: demo user, 2 goals, mixed-currency entries, 90 days of snapshots
-- [ ] `docs/data-model.md` documents the isolation query-shape table
-- [ ] `pnpm db:reset` green; `migrate status` reports no drift
+- [x] Prisma + client installed; schema written by hand (see deviation below); `DATABASE_URL` wired
+- [x] Full 6-model schema written with enums, indexes, and the `(base,quote,capturedOn)` unique
+- [x] `init_okane_schema` migration applied cleanly to an empty DB (and to `okane_test`)
+- [x] `PrismaService` + global `PrismaModule`; shutdown hooks in `main.ts`
+- [x] Decimal→string response interceptor registered and verified on a real response body
+- [x] Prisma exception filter mapping P2002/P2025
+- [x] Idempotent seed: demo user, 2 goals, mixed-currency entries, 90 days of snapshots
+- [x] `docs/data-model.md` documents the isolation query-shape table
+- [x] Migration applied cleanly to both `okane` and `okane_test`; `migrate status` reports no drift
+
+## Deviations from the blueprint
+- **Prisma pinned to 6.19.3, not "latest" (8.0.0-rc.13).** `pnpm add prisma` resolved to an
+  8.0.0-rc.13 pre-release CLI with a fundamentally different command surface (`prisma migration`
+  instead of `prisma migrate`, no `datasource.url` in schema, requires a driver-adapter-based
+  `prisma.config.ts`). This is exactly the risk flagged in this phase's own Risk Assessment
+  ("Version pins unverified... if a major breaks, pin down one major and note it") — resolved by
+  pinning `prisma`/`@prisma/client` to `6.19.3` (latest stable major), which supports the classic
+  `datasource { url = env(...) }` schema and `prisma migrate dev/reset/studio` commands the rest of
+  this plan assumes. `prisma.seed` is declared via `package.json#prisma` (deprecated-but-working in
+  6.x with a warning; would need `prisma.config.ts` if upgrading to 7+ later).
+- **Decimal serializer uses `toFixed(n)` with a field-name allowlist, not plain `toString()`.**
+  decimal.js (which Prisma's `Decimal` wraps) strips trailing zeros on `toString()` —
+  `new Decimal("1500000.00").toString()` returns `"1500000"`, which fails this phase's own success
+  criterion verbatim. Fixed by calling `.toFixed(2)` for money fields and `.toFixed(8)` for a
+  small allowlist of rate-carrying field names (`rate`, `fxRateUsed`, `rateUsed`, `threshold`,
+  `lastTriggeredRate`) in `decimal.serializer.interceptor.ts`. Any new rate-scale field added in
+  Phase 5 must be added to that allowlist or it will silently truncate to 2dp.
+- File named `decimal.serializer.interceptor.ts` (not `decimal.serializer.ts`) — it register as a
+  Nest interceptor, and the project's file-naming convention favors self-describing names.
 
 ## Success Criteria
 - `prisma migrate reset --force` on an empty database completes and seeds without error.

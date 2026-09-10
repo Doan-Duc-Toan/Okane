@@ -1,0 +1,124 @@
+// Okane MVP — complete schema, defined once in Phase 2 so Phases 4 and 5 can
+// build in parallel without both editing this file. Additive migrations only
+// from here on (see docs/data-model.md for the rollback boundary).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Currency {
+  JPY
+  VND
+}
+
+enum AlertDirection {
+  ABOVE
+  BELOW
+}
+
+enum Locale {
+  vi
+  ja
+}
+
+enum ThemePref {
+  light
+  dark
+  system
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  displayName  String?
+  locale       Locale    @default(vi)
+  theme        ThemePref @default(system)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  refreshTokens RefreshToken[]
+  goals         Goal[]
+  savingsEntries SavingsEntry[]
+  rateAlerts    RateAlert[]
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model Goal {
+  id           String    @id @default(uuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  targetAmount Decimal   @db.Decimal(18, 2)
+  currency     Currency
+  deadline     DateTime? @db.Date
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  savingsEntries SavingsEntry[]
+
+  @@index([userId])
+}
+
+model SavingsEntry {
+  id                   String    @id @default(uuid())
+  userId               String
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goalId               String
+  goal                 Goal      @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  amount               Decimal   @db.Decimal(18, 2)
+  currency             Currency
+  amountInGoalCurrency Decimal   @db.Decimal(18, 2)
+  fxRateUsed           Decimal?  @db.Decimal(20, 8)
+  entryDate            DateTime  @db.Date
+  note                 String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([goalId])
+  @@index([userId])
+}
+
+model RateSnapshot {
+  id         String   @id @default(uuid())
+  base       Currency
+  quote      Currency
+  rate       Decimal  @db.Decimal(20, 8)
+  capturedOn DateTime @db.Date
+  source     String
+  createdAt  DateTime @default(now())
+
+  @@unique([base, quote, capturedOn])
+  @@index([capturedOn])
+}
+
+model RateAlert {
+  id                String         @id @default(uuid())
+  userId            String
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  direction         AlertDirection
+  threshold         Decimal        @db.Decimal(20, 8)
+  active            Boolean        @default(true)
+  lastTriggeredAt   DateTime?
+  lastTriggeredRate Decimal?       @db.Decimal(20, 8)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([userId])
+}

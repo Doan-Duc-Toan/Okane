@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { validate } from './config/env.validation.js';
+import { PrismaModule } from './prisma/prisma.module.js';
 
 // Extension slots — each backend phase appends its module import here,
 // so parallel phases never restructure this file, only add a line.
@@ -18,6 +19,7 @@ import { validate } from './config/env.validation.js';
       isGlobal: true,
       validate,
     }),
+    PrismaModule,
     // AuthModule,
     // UsersModule,
     // GoalsModule,
