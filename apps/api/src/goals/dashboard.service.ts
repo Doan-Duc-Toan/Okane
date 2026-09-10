@@ -26,7 +26,7 @@ export class DashboardService {
   ) {}
 
   async getDashboard(userId: string) {
-    const [goals, recentEntries] = await Promise.all([
+    const [goals, recentEntriesRaw] = await Promise.all([
       this.goalsService.findAllForUser(userId),
       this.prisma.savingsEntry.findMany({
         where: { userId },
@@ -35,6 +35,12 @@ export class DashboardService {
         include: { goal: { select: { name: true } } },
       }),
     ]);
+
+    // Frozen contract (phase-04): each recent entry carries a flat
+    // `goalName` string, not a nested `{ goal: { name } }` — the `include`
+    // above is the cheapest query shape to get the name, so it's flattened
+    // here rather than exposing the nested Prisma include shape to clients.
+    const recentEntries = recentEntriesRaw.map(({ goal, ...entry }) => ({ ...entry, goalName: goal.name }));
 
     const totalsByCurrency = new Map<string, CurrencyTotal>();
     for (const goal of goals) {
