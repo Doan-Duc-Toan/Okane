@@ -12,20 +12,19 @@ import type {
 } from './goals.types'
 
 /**
- * Typed against Phase 4's frozen endpoints. Two normalizations below exist
- * because the live backend's actual responses deviate from that frozen
- * contract (found via integration testing, not assumed) — see phase-08's
- * verification notes for the full report:
- *  - `GET /goals/:id/entries` returns a bare `Entry[]`, not the documented
- *    `{ entries, nextCursor }` envelope (so there is currently no cursor —
- *    pagination is effectively "load everything").
- *  - Dashboard `recentEntries` nest the goal as `{ goal: { name } }` rather
- *    than a flat `goalName` string.
- * Both are cheap, lossless adapters. What is NOT patched here: money fields
- * (`targetAmount`, `amount`, `amountInGoalCurrency`) come back as raw
- * decimal.js internals (`{ s, e, d }`) instead of strings — that one is a
- * backend serialization bug this layer cannot safely reconstruct, so
- * `format.ts` fails visibly ("—" + console.error) instead of guessing.
+ * Typed against Phase 4's frozen endpoints. Phase 8 found the live backend
+ * temporarily deviating from that contract (bare `Entry[]` instead of
+ * `{ entries, nextCursor }`; nested `{ goal: { name } }` instead of flat
+ * `goalName`) and added the two tolerant normalizations below. Phase 10
+ * confirmed the backend now matches the frozen contract exactly — both
+ * normalizations are left in place anyway since they're no-ops on the
+ * correct shape and free forward/backward tolerance if a response ever
+ * regresses, at effectively zero cost.
+ * The Decimal-serialization bug these were originally paired with (money
+ * fields arriving as raw decimal.js internals) was fixed on the backend
+ * (`Decimal.isDecimal()` check) in Phase 10 — `format.ts`'s "—" +
+ * console.error fallback stays too, as a last-line-of-defense guard rather
+ * than an active workaround.
  */
 function normalizeEntriesResponse(raw: unknown): EntriesPage {
   if (Array.isArray(raw)) return { entries: raw as Entry[], nextCursor: null }

@@ -1,11 +1,11 @@
 ---
 title: "Okane MVP — React + NestJS savings-goal app with JPY/VND FX"
 description: "Decoupled React SPA + NestJS API for goal-based savings tracking with live JPY/VND rate, self-built rate history, and cross-currency goal math."
-status: pending
+status: completed
 work_type: feature
 priority: P1
 effort: 40h
-branch: main (repo not yet initialized — created in Phase 1)
+branch: main
 tags: [react, nestjs, prisma, postgres, fx, i18n, mvp]
 created: 2026-09-10
 blockedBy: []
@@ -39,16 +39,16 @@ Context: [brainstorm](../reports/brainstorm-260909-1453-savings-app-idea.md) ·
 
 | # | Phase | Status | Effort | File |
 |---|-------|--------|--------|------|
-| 1 | Monorepo scaffold & local dev environment | done | 2h | [phase-01-monorepo-scaffold-and-dev-environment.md](phase-01-monorepo-scaffold-and-dev-environment.md) |
-| 2 | Prisma schema & data-isolation foundation | done — pinned Prisma 6.19.3, see phase notes | 3h | [phase-02-prisma-schema-and-data-isolation.md](phase-02-prisma-schema-and-data-isolation.md) |
-| 3 | Auth backend (JWT access + refresh) | done | 4h | [phase-03-auth-backend-jwt.md](phase-03-auth-backend-jwt.md) |
-| 4 | Goals & savings entries backend + goal math | done — cross-currency freeze proven via unit fake; see phase notes | 6h | [phase-04-goals-and-entries-backend.md](phase-04-goals-and-entries-backend.md) |
-| 5 | Exchange-rate backend (provider, cron, history, alerts) | done — 2 real bugs found & fixed during verification, see phase notes | 5h | [phase-05-exchange-rate-backend.md](phase-05-exchange-rate-backend.md) |
-| 6 | React app shell (tokens, theme, i18n, routing, API client) | done | 5h | [phase-06-react-app-shell.md](phase-06-react-app-shell.md) |
-| 7 | Auth UI (login, register, session handling) | done | 3h | [phase-07-auth-ui.md](phase-07-auth-ui.md) |
-| 8 | Goals UI (dashboard, goal detail, forms, history) | pending | 6h | [phase-08-goals-ui.md](phase-08-goals-ui.md) |
-| 9 | Exchange & Convert UI (rate, chart, converter, alerts) | done — backend not yet reachable for a live click-through, see phase notes | 4h | [phase-09-exchange-and-convert-ui.md](phase-09-exchange-and-convert-ui.md) |
-| 10 | Integration, QA & hardening | pending | 2h | [phase-10-integration-qa-and-hardening.md](phase-10-integration-qa-and-hardening.md) |
+| 1 | Monorepo scaffold & local dev environment | completed | 2h | [phase-01-monorepo-scaffold-and-dev-environment.md](phase-01-monorepo-scaffold-and-dev-environment.md) |
+| 2 | Prisma schema & data-isolation foundation | completed — pinned Prisma 6.19.3, see phase notes | 3h | [phase-02-prisma-schema-and-data-isolation.md](phase-02-prisma-schema-and-data-isolation.md) |
+| 3 | Auth backend (JWT access + refresh) | completed | 4h | [phase-03-auth-backend-jwt.md](phase-03-auth-backend-jwt.md) |
+| 4 | Goals & savings entries backend + goal math | completed — cross-currency freeze proven via unit fake; see phase notes | 6h | [phase-04-goals-and-entries-backend.md](phase-04-goals-and-entries-backend.md) |
+| 5 | Exchange-rate backend (provider, cron, history, alerts) | completed — 2 real bugs found & fixed during verification, see phase notes | 5h | [phase-05-exchange-rate-backend.md](phase-05-exchange-rate-backend.md) |
+| 6 | React app shell (tokens, theme, i18n, routing, API client) | completed | 5h | [phase-06-react-app-shell.md](phase-06-react-app-shell.md) |
+| 7 | Auth UI (login, register, session handling) | completed | 3h | [phase-07-auth-ui.md](phase-07-auth-ui.md) |
+| 8 | Goals UI (dashboard, goal detail, forms, history) | completed — contract adapters confirmed no-op-safe now that the backend matches spec, kept as forward/backward tolerance | 6h | [phase-08-goals-ui.md](phase-08-goals-ui.md) |
+| 9 | Exchange & Convert UI (rate, chart, converter, alerts) | completed — backend landed after this phase; contract confirmed correct in Phase 10 | 4h | [phase-09-exchange-and-convert-ui.md](phase-09-exchange-and-convert-ui.md) |
+| 10 | Integration, QA & hardening | completed — 1 real defect found & fixed (contrast); some journeys rest on the QA agent's report, not independently re-walked — see phase notes | 2h | [phase-10-integration-qa-and-hardening.md](phase-10-integration-qa-and-hardening.md) |
 
 ## Key dependencies
 
@@ -87,5 +87,7 @@ limiting, deployment + CSP/helmet, data export, furusato-nozei/nenkin content, P
 Playwright E2E, FX historical backfill (paid APIs — deliberately declined).
 
 ## Next steps
-Run `/tkm:takumi` against this directory. Status column is updated per phase
-(`ck` CLI is not installed on this machine — edit the Status column in this file directly).
+MVP complete — all 10 phases done, see `docs/project-changelog.md` for the shipped summary
+and `docs/development-roadmap.md` for the ordered backlog above plus two Phase 10 items
+worth a firsthand look before public launch (not believed broken, just not independently
+re-verified this session — see `phase-10-integration-qa-and-hardening.md`'s Todo List).
