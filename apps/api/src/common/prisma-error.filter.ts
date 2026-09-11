@@ -1,4 +1,11 @@
-import { ArgumentsHost, Catch, ConflictException, ExceptionFilter, NotFoundException } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ConflictException,
+  ExceptionFilter,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import type { Response } from 'express';
 
@@ -10,6 +17,8 @@ import type { Response } from 'express';
  */
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaClientExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(PrismaClientExceptionFilter.name);
+
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -30,7 +39,8 @@ export class PrismaClientExceptionFilter implements ExceptionFilter {
     }
 
     // Unknown Prisma error code — surface as a generic 500 rather than leaking
-    // internals, but keep the message for server-side logs.
+    // internals, but log the real message/code server-side so it's diagnosable.
+    this.logger.error(`Unhandled Prisma error [${exception.code}]: ${exception.message}`, exception.stack);
     response.status(500).json({ statusCode: 500, message: 'Internal server error' });
   }
 }
