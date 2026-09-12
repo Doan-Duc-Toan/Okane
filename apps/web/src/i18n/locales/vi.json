@@ -211,5 +211,10 @@
     "userNotFound": "Không tìm thấy tài khoản này",
     "unexpectedField": "Yêu cầu chứa dữ liệu không hợp lệ",
     "invalidRequest": "Yêu cầu không hợp lệ"
+  },
+  "update": {
+    "available": "Đã có phiên bản mới",
+    "refresh": "Tải lại",
+    "dismiss": "Đóng"
   }
 }

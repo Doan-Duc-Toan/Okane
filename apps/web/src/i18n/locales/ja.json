@@ -211,5 +211,10 @@
     "userNotFound": "このアカウントが見つかりません",
     "unexpectedField": "リクエストの内容が正しくありません",
     "invalidRequest": "リクエストが正しくありません"
+  },
+  "update": {
+    "available": "新しいバージョンがあります",
+    "refresh": "再読み込み",
+    "dismiss": "閉じる"
   }
 }

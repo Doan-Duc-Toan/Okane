@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router'
 import { RateTicker } from '@/features/exchange/components/rate-ticker'
+import { UpdatePrompt } from '@/components/ui/update-prompt'
 import { TopNav } from './top-nav'
 import styles from './app-shell.module.css'
 
@@ -14,6 +15,7 @@ export function AppShell() {
       <main className={styles.main}>
         <Outlet />
       </main>
+      <UpdatePrompt />
     </div>
   )
 }
