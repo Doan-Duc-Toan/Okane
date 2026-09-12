@@ -35,6 +35,9 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,woff2}'],
+        // icons.svg is an unused template leftover (see the icon-generation commit) — it
+        // matches the glob above but earns no place in the offline shell.
+        globIgnores: ['icons.svg'],
         navigateFallback: 'index.html',
         navigateFallbackDenylist: [/^\/api/],
         runtimeCaching: [
