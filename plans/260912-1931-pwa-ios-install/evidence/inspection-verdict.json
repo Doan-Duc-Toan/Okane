@@ -1,0 +1,26 @@
+{
+  "score": 9,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "Four PNG icons generated at the correct sizes, opaque, on-brand, under 40KB each",
+    "Manifest resolves with all icons (any + maskable) and no 404s",
+    "Service worker precaches the built app shell but never /api",
+    "Offline reload of a previously visited page still renders the shell",
+    "An authenticated /api call is always served from the network, never the service worker",
+    "Update-available prompt renders only when a new build is waiting, refresh reloads on the new worker, dismiss hides without losing the pending update",
+    "Existing dark-mode pre-paint script in index.html stays byte-identical and last in <head>",
+    "apps/api and existing web tests are unaffected"
+  ],
+  "regressionChecked": [
+    "navigateFallbackDenylist and every runtimeCaching urlPattern verified incapable of matching /api/*, cross-checked against the built dist/sw.js precache list (zero /api entries)",
+    "index.html diff confirmed as a pure insertion around the pre-paint theme script — script itself byte-identical and still last in <head>",
+    "dismissing the update banner confirmed non-destructive: workbox-window re-fires the waiting/onNeedRefresh event on next load if an update is still pending",
+    "apps/api test suite (unit + e2e) run and green, confirming zero backend impact",
+    "no secrets, env files, or credentials touched"
+  ],
+  "contractStatus": "OK",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": []
+}

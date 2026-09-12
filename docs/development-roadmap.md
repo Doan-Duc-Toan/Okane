@@ -33,8 +33,12 @@ deliberate look before any public launch.
    notification channel yet.
 5. **Data export.**
 6. **Recurring savings reminders.**
-7. **PWA / native mobile** — the API was deliberately built decoupled from the web app
-   specifically so this doesn't require backend changes when it happens.
+7. **PWA (iOS install)** — implemented: manifest, service worker, home-screen icons, and an
+   update-available prompt (`plans/260912-1931-pwa-ios-install/`, phases 1–3; see
+   `docs/project-changelog.md`). Phase 4 (real-iPhone verification) hasn't run yet, so treat as
+   unproven until it does. Native mobile (React Native or otherwise) remains fully backlog; the
+   API was deliberately built decoupled from the web app specifically so neither this nor a
+   future native client needs backend changes.
 
 ## Explicitly declined, not just deferred
 

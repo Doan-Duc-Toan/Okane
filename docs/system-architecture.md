@@ -91,6 +91,19 @@ server-side, so a stolen-and-replayed old token is detectable. A single-flight g
 on the client prevents concurrent requests from each independently triggering a refresh
 (which would otherwise look like refresh-token reuse and trip the revocation logic).
 
+## Service worker / offline shell (`apps/web`)
+
+`vite-plugin-pwa` (`generateSW`/Workbox, configured in `vite.config.ts`) adds a client-side
+caching layer between the browser and the network, for static build output only: it precaches
+the built JS/CSS/HTML/SVG/woff2 app shell and runtime-caches Google Fonts. `/api/**` is
+explicitly excluded from both the precache and the navigate fallback, so the service worker never
+sees an API request — only `apps/web`'s own built assets. `registerType: 'prompt'` (not
+`autoUpdate`) means a new build never swaps JS chunks under a running React tree silently;
+`UpdatePrompt` (`components/ui/update-prompt.tsx`, `useRegisterSW`) surfaces a dismissible bar
+instead, and the user opts into the reload. This is what makes `apps/web` installable to an iOS
+home screen via Safari's "Add to Home Screen" — see `plans/260912-1931-pwa-ios-install/` (Phase 4
+real-device verification still pending).
+
 ## Data isolation
 
 Prisma has no row-level security. Every user-owned model (`Goal`, `SavingsEntry`,
@@ -108,4 +121,4 @@ Manual journey QA covers the rest for this MVP — no Playwright/browser E2E yet
 ## Deliberately deferred (see `docs/development-roadmap.md` for order)
 
 Login rate limiting, CSP/security headers, Google OAuth, alert delivery (email/push),
-data export, recurring reminders, PWA/native mobile, deployment.
+data export, recurring reminders, native mobile, deployment.

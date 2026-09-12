@@ -1,5 +1,27 @@
 # Project Changelog
 
+## 2026-09-12 — iOS home-screen install (PWA, `apps/web`)
+
+`apps/web` is now installable to an iPhone home screen via Safari's "Add to Home Screen" (no
+App Store, no `apps/api` change — see `plans/260912-1931-pwa-ios-install/`).
+
+**Added — frontend (`apps/web`)**
+- `vite-plugin-pwa` (`generateSW`/Workbox): inline manifest (name, icons, standalone display,
+  brand theme/background colors), a service worker precaching the built app shell
+  (JS/CSS/HTML/SVG/woff2) plus a Google Fonts runtime cache. `/api/**` is excluded from both the
+  precache and the navigate fallback — the service worker never intercepts an API request.
+- Four brand-mark PNG icons (apple-touch-icon, icon-192/512, maskable-512) generated from an
+  HTML/CSS rendering of the real mark via a one-off `puppeteer-core` script
+  (`apps/web/scripts/generate-pwa-icons.mjs`, not wired into the build).
+- iOS meta tags in `index.html` (apple-touch-icon, `apple-mobile-web-app-capable`, status bar
+  style, light/dark `theme-color`).
+- `UpdatePrompt` (`useRegisterSW`, `registerType: 'prompt'`): a dismissible bar that appears when
+  a new build is waiting, so an installed app doesn't stay stuck on stale cached code.
+
+**Not yet verified** — Phase 4 of the plan (the real-iPhone install/offline/update walkthrough)
+hasn't run. Everything above is implemented and committed but unproven on an actual device; see
+the Todo List in `plans/260912-1931-pwa-ios-install/phase-04-ios-device-verification.md`.
+
 ## 2026-09-10 — MVP: Okane (React + NestJS)
 
 Full rebuild from scratch after the earlier Laravel monolith attempt was scrapped in
