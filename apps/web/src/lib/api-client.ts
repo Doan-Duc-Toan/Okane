@@ -10,6 +10,16 @@
 
 import i18n from '@/i18n'
 
+/**
+ * In dev, this stays '' and every call below hits a relative `/api/...` path,
+ * which Vite's dev-server proxy (vite.config.ts) forwards to localhost:3000 —
+ * same-origin, no CORS involved. In production the frontend (Vercel) and API
+ * (Render) are two different origins with nothing proxying between them, so
+ * VITE_API_URL must be set to the deployed API's own origin at build time
+ * (baked into the bundle — see apps/web/.env.example).
+ */
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? ''
+
 export class ApiError extends Error {
   status: number
   /** Every individual validation message, in server order — for callers that
@@ -110,7 +120,7 @@ export function setOnSessionExpired(handler: () => void): void {
 async function performRefresh(): Promise<AuthSession | null> {
   if (!refreshToken) return null
   try {
-    const res = await fetch('/api/auth/refresh', {
+    const res = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken }),
@@ -147,7 +157,7 @@ export async function request<T>(path: string, init: RequestOptions = {}): Promi
     finalHeaders.set('Content-Type', 'application/json')
   }
 
-  const res = await fetch(`/api${path}`, { ...rest, headers: finalHeaders })
+  const res = await fetch(`${API_BASE_URL}/api${path}`, { ...rest, headers: finalHeaders })
 
   if (res.status === 401 && !_isRetry) {
     const session = await attemptRefresh()
