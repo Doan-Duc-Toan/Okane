@@ -33,6 +33,30 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { email: email.toLowerCase() } });
   }
 
+  /** Internal only — full row, needed to compare the existing googleId before linking. */
+  async findByGoogleId(googleId: string) {
+    return this.prisma.user.findUnique({ where: { googleId } });
+  }
+
+  async linkGoogleId(userId: string, googleId: string): Promise<UserProfile> {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { googleId },
+      select: PROFILE_SELECT,
+    });
+  }
+
+  async createWithGoogle(
+    email: string,
+    googleId: string,
+    displayName: string | null,
+  ): Promise<UserProfile> {
+    return this.prisma.user.create({
+      data: { email: email.toLowerCase(), googleId, passwordHash: null, displayName },
+      select: PROFILE_SELECT,
+    });
+  }
+
   async findById(id: string): Promise<UserProfile> {
     const user = await this.prisma.user.findUnique({ where: { id }, select: PROFILE_SELECT });
     if (!user) throw new NotFoundException('userNotFound');

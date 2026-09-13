@@ -36,6 +36,10 @@ class EnvironmentVariables {
 
   @IsString()
   FX_SNAPSHOT_CRON: string = '0 1 * * *';
+
+  @IsString()
+  @IsOptional()
+  GOOGLE_CLIENT_ID?: string;
 }
 
 export function validate(config: Record<string, unknown>) {

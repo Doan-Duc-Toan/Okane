@@ -1,7 +1,15 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  ServiceUnavailableException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { UsersService, type UserProfile } from '../users/users.service.js';
+import { GoogleTokenVerifier } from './google-token.service.js';
 import { TokenService, type TokenPair } from './token.service.js';
+import type { GoogleLoginDto } from './dto/google-login.dto.js';
 import type { LoginDto } from './dto/login.dto.js';
 import type { RegisterDto } from './dto/register.dto.js';
 
@@ -21,6 +29,7 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly tokenService: TokenService,
+    private readonly googleTokenVerifier: GoogleTokenVerifier,
   ) {}
 
   async register(dto: RegisterDto): Promise<AuthResult> {
@@ -52,6 +61,58 @@ export class AuthService {
     const user = await this.usersService.findById(record.id);
     const tokens = await this.tokenService.issuePair(user.id, user.email);
     return { ...tokens, user };
+  }
+
+  async loginWithGoogle(dto: GoogleLoginDto): Promise<AuthResult> {
+    if (!this.googleTokenVerifier.isConfigured) {
+      throw new ServiceUnavailableException('googleNotConfigured');
+    }
+
+    const identity = await this.googleTokenVerifier.verify(dto.credential);
+    if (!identity.email || !identity.emailVerified) {
+      throw new UnauthorizedException('googleEmailUnverified');
+    }
+    const email = identity.email.toLowerCase();
+
+    const user = await this.resolveGoogleUser(identity.sub, email, identity.name);
+    const tokens = await this.tokenService.issuePair(user.id, user.email);
+    return { ...tokens, user };
+  }
+
+  private async resolveGoogleUser(
+    googleId: string,
+    email: string,
+    name: string | null,
+  ): Promise<UserProfile> {
+    const byGoogleId = await this.usersService.findByGoogleId(googleId);
+    if (byGoogleId) return this.usersService.findById(byGoogleId.id);
+
+    const byEmail = await this.usersService.findByEmailWithPassword(email);
+    if (byEmail) {
+      if (byEmail.googleId && byEmail.googleId !== googleId) {
+        // A different Google account already owns this email — never overwrite.
+        throw new UnauthorizedException('googleEmailUnverified');
+      }
+      if (byEmail.googleId === googleId) return this.usersService.findById(byEmail.id);
+      // byEmail.googleId is null here — a password-only account with this
+      // verified email. Link, without touching passwordHash or displayName.
+      return this.usersService.linkGoogleId(byEmail.id, googleId);
+    }
+
+    try {
+      return await this.usersService.createWithGoogle(email, googleId, name);
+    } catch (err) {
+      // Concurrent first-ever sign-in from the same Google account: both requests
+      // miss the lookups above and both try to create. Re-run once instead of
+      // letting Prisma's global filter turn this into an English-prose 409.
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+        const retryByGoogleId = await this.usersService.findByGoogleId(googleId);
+        if (retryByGoogleId) return this.usersService.findById(retryByGoogleId.id);
+        const retryByEmail = await this.usersService.findByEmailWithPassword(email);
+        if (retryByEmail) return this.usersService.findById(retryByEmail.id);
+      }
+      throw err;
+    }
   }
 
   async refresh(refreshToken: string): Promise<TokenPair> {
