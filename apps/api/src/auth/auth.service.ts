@@ -43,7 +43,9 @@ export class AuthService {
     const hashToCompare = record?.passwordHash ?? DUMMY_HASH;
     const passwordMatches = await bcrypt.compare(dto.password, hashToCompare);
 
-    if (!record || !passwordMatches) {
+    // A Google-only account has no password to match — reject after the compare
+    // above, never before it, so the timing stays identical to a wrong password.
+    if (!record || !record.passwordHash || !passwordMatches) {
       throw new UnauthorizedException('invalidCredentials');
     }
 

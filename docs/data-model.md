@@ -6,7 +6,9 @@ the plan directory. Every service touching a user-owned table must follow it.
 
 ## Schema summary
 
-- `User` — email/password account. `passwordHash` only, never a plaintext column.
+- `User` — email/password **or Google** account. `passwordHash` only, never a plaintext column;
+  it is `null` for a Google-only account (`googleId` set instead, storing Google's stable `sub`).
+  A user may have both.
 - `RefreshToken` — hashed, revocable JWT refresh sessions.
 - `Goal` — a savings target in one currency (`JPY` or `VND`). Currency is
   immutable after creation (see rationale below).
