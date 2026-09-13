@@ -82,7 +82,10 @@ export function AmountInput({
       id={id}
       label={label}
       type="text"
-      inputMode="decimal"
+      // Not inputMode="decimal" — that forces a digits-only keypad on iOS/Android,
+      // which blocks the whole point of this field: shorthand like "1.5 tỷ" or
+      // "500k" needs a real keyboard with letters, not just numbers.
+      inputMode="text"
       autoComplete="off"
       autoFocus={autoFocus}
       required={required}
