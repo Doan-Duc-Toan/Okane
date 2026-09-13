@@ -14,8 +14,13 @@ export interface LoginPayload {
   password: string
 }
 
+export interface GoogleLoginPayload {
+  credential: string
+}
+
 export const authApi = {
   register: (payload: RegisterPayload) => apiClient.post<AuthSession>('/auth/register', payload),
   login: (payload: LoginPayload) => apiClient.post<AuthSession>('/auth/login', payload),
+  googleLogin: (payload: GoogleLoginPayload) => apiClient.post<AuthSession>('/auth/google', payload),
   logout: () => apiClient.post<void>('/auth/logout'),
 }

@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useQueryClient } from '@tanstack/react-query'
-import { Link, useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useAuth } from '@/contexts/auth-context'
 import { ApiError } from '@/lib/api-client'
 import { AuthCard } from './components/auth-card'
+import { GoogleButton } from './components/google-button'
+import { useAuthSuccess } from './hooks/use-auth-success'
 import { useRegister } from './hooks/use-register'
 import styles from './register-page.module.css'
 
@@ -20,10 +20,8 @@ const EMAIL_RULE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export function RegisterPage() {
   const { t } = useTranslation()
-  const { login } = useAuth()
   const registerMutation = useRegister()
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
+  const authSuccess = useAuthSuccess()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -67,11 +65,7 @@ export function RegisterPage() {
     registerMutation.mutate(
       { email, password, displayName: displayName || undefined },
       {
-        onSuccess: (session) => {
-          queryClient.clear()
-          login(session)
-          navigate('/', { replace: true })
-        },
+        onSuccess: (session) => authSuccess(session, '/'),
         onError: (err) => {
           if (err instanceof ApiError) {
             if (err.status === 409) {
@@ -143,6 +137,10 @@ export function RegisterPage() {
           {t('register.submit')}
         </Button>
       </form>
+      <div className={styles.divider}>
+        <span>{t('login.or')}</span>
+      </div>
+      <GoogleButton redirectTo="/" onError={setFormError} />
       <p style={{ textAlign: 'center', fontSize: 'var(--text-sm)', margin: 0 }}>
         <Link to="/login">{t('login.backToLogin')}</Link>
       </p>

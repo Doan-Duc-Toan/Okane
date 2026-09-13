@@ -48,7 +48,8 @@
     "backToLogin": "すでにアカウントをお持ちですか？ログイン",
     "error": {
       "invalidCredentials": "メールアドレスまたはパスワードが正しくありません",
-      "network": "サーバーに接続できません。もう一度お試しください。"
+      "network": "サーバーに接続できません。もう一度お試しください。",
+      "google": "Googleでログインできませんでした。もう一度お試しください。"
     }
   },
   "register": {
@@ -210,7 +211,11 @@
     "invalidCredentials": "メールアドレスまたはパスワードが正しくありません",
     "userNotFound": "このアカウントが見つかりません",
     "unexpectedField": "リクエストの内容が正しくありません",
-    "invalidRequest": "リクエストが正しくありません"
+    "invalidRequest": "リクエストが正しくありません",
+    "googleTokenInvalid": "Googleの認証情報が無効です。もう一度お試しください。",
+    "googleEmailUnverified": "このGoogleアカウントのメールアドレスは確認されていないため使用できません。",
+    "googleNotConfigured": "Googleログインは現在ご利用いただけません。",
+    "credentialRequired": "Googleログインのリクエストが正しくありません。"
   },
   "update": {
     "available": "新しいバージョンがあります",

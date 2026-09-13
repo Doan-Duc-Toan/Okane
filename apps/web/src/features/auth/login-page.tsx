@@ -1,16 +1,13 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useQueryClient } from '@tanstack/react-query'
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
+import { Link, useLocation, useSearchParams } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useAuth } from '@/contexts/auth-context'
-import { useTheme } from '@/contexts/theme-context'
 import { ApiError } from '@/lib/api-client'
-import type { AuthSession } from '@/lib/api-client'
 import { AuthCard } from './components/auth-card'
 import { GoogleButton } from './components/google-button'
+import { useAuthSuccess } from './hooks/use-auth-success'
 import { useLogin } from './hooks/use-login'
 import styles from './login-page.module.css'
 
@@ -21,14 +18,11 @@ interface LocationState {
 const EMAIL_RULE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export function LoginPage() {
-  const { t, i18n } = useTranslation()
-  const { login } = useAuth()
-  const { theme, setTheme } = useTheme()
+  const { t } = useTranslation()
   const loginMutation = useLogin()
-  const navigate = useNavigate()
+  const authSuccess = useAuthSuccess()
   const location = useLocation()
   const [searchParams] = useSearchParams()
-  const queryClient = useQueryClient()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -37,6 +31,7 @@ export function LoginPage() {
   const [formError, setFormError] = useState<string | null>(null)
 
   const sessionExpiredNotice = searchParams.get('reason') === 'expired'
+  const redirectTo = (location.state as LocationState | null)?.from?.pathname ?? '/'
 
   function validate(): boolean {
     let valid = true
@@ -57,18 +52,6 @@ export function LoginPage() {
     return valid
   }
 
-  // The server-stored locale/theme represents the user's cross-device choice
-  // (set via PATCH /users/me elsewhere in the app) — adopt it on sign-in when
-  // it differs from what this browser currently has, per Phase 6/7.
-  function adoptServerPreferences(session: AuthSession) {
-    if (session.user.locale && session.user.locale !== i18n.language) {
-      void i18n.changeLanguage(session.user.locale)
-    }
-    if (session.user.theme && session.user.theme !== theme) {
-      setTheme(session.user.theme)
-    }
-  }
-
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
     if (loginMutation.isPending) return
@@ -78,14 +61,7 @@ export function LoginPage() {
     loginMutation.mutate(
       { email, password },
       {
-        onSuccess: (session) => {
-          // A previous user's cached data must never leak into this session.
-          queryClient.clear()
-          login(session)
-          adoptServerPreferences(session)
-          const state = location.state as LocationState | null
-          navigate(state?.from?.pathname ?? '/', { replace: true })
-        },
+        onSuccess: (session) => authSuccess(session, redirectTo),
         onError: (err) => {
           if (err instanceof ApiError) {
             setFormError(err.status === 401 ? t('login.error.invalidCredentials') : err.message)
@@ -140,7 +116,7 @@ export function LoginPage() {
         <div className={styles.divider}>
           <span>{t('login.or')}</span>
         </div>
-        <GoogleButton />
+        <GoogleButton redirectTo={redirectTo} onError={setFormError} />
         <p className={styles.footerLink}>
           <Link to="/register">{t('login.createAccount')}</Link>
         </p>

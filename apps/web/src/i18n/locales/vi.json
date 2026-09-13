@@ -48,7 +48,8 @@
     "backToLogin": "Đã có tài khoản? Đăng nhập",
     "error": {
       "invalidCredentials": "Email hoặc mật khẩu không đúng",
-      "network": "Không thể kết nối máy chủ. Vui lòng thử lại."
+      "network": "Không thể kết nối máy chủ. Vui lòng thử lại.",
+      "google": "Không thể đăng nhập bằng Google. Vui lòng thử lại."
     }
   },
   "register": {
@@ -210,7 +211,11 @@
     "invalidCredentials": "Email hoặc mật khẩu không đúng",
     "userNotFound": "Không tìm thấy tài khoản này",
     "unexpectedField": "Yêu cầu chứa dữ liệu không hợp lệ",
-    "invalidRequest": "Yêu cầu không hợp lệ"
+    "invalidRequest": "Yêu cầu không hợp lệ",
+    "googleTokenInvalid": "Đăng nhập Google không hợp lệ. Vui lòng thử lại.",
+    "googleEmailUnverified": "Email Google này chưa được xác minh nên không thể dùng để đăng nhập.",
+    "googleNotConfigured": "Đăng nhập Google hiện chưa khả dụng.",
+    "credentialRequired": "Yêu cầu đăng nhập Google không hợp lệ."
   },
   "update": {
     "available": "Đã có phiên bản mới",
