@@ -21,6 +21,8 @@ services:
         value: 30d
       - key: CORS_ORIGINS
         sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
       - key: FX_API_URL
         value: https://open.er-api.com/v6/latest/JPY
       - key: FX_SNAPSHOT_CRON

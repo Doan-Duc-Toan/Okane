@@ -1,5 +1,39 @@
 # Project Changelog
 
+## 2026-09-13 — Sign in with Google
+
+A second login method alongside email/password, live on `https://okane-web.vercel.app`. See
+`plans/260913-2152-google-oauth-login/`.
+
+**Added — backend (`apps/api`)**
+- `POST /api/auth/google` — verifies a Google ID token (`google-auth-library`, audience-bound to
+  `GOOGLE_CLIENT_ID`) via an injectable `GoogleTokenVerifier`, then resolves the account: existing
+  `googleId` → sign in; verified email matching an existing password account → link (without
+  touching `passwordHash` or `displayName`); otherwise create a new Google-only account.
+  `email_verified !== true` is rejected before any database lookup — the entire security basis for
+  auto-linking. Returns the same `AuthResult` shape as `/auth/login`.
+- `User.passwordHash` is now nullable; `User.googleId` (unique, stores Google's stable `sub`, never
+  the email) added. Widening-only migration, no existing row affected.
+- Every new error is a stable i18n key (`googleTokenInvalid`, `googleEmailUnverified`,
+  `googleNotConfigured`, `credentialRequired`) — zero English prose, matching the existing contract.
+
+**Added — frontend (`apps/web`)**
+- The previously-disabled "coming soon" Google button on `/login` and `/register` now renders
+  Google's real button (Google Identity Services) and signs in for real, when
+  `VITE_GOOGLE_CLIENT_ID` is configured. Left unset, it renders exactly the old disabled state.
+- `useAuthSuccess()` extracted from the password-login success path (clear query cache → adopt
+  session → adopt server locale/theme → navigate) and reused by all four sign-in paths;
+  register now adopts server-stored locale/theme too, which it didn't before.
+
+**Chosen design:** ID-token verification (browser talks to Google directly, API only verifies),
+not a server-side OAuth redirect — the web app (Vercel) and API (Render) are different domains, and
+a redirect callback would have to smuggle a session back to the SPA with no cookie sharing between
+them. The ID-token flow reuses the exact `/auth/login` response shape instead, at zero cost to
+`auth-context.tsx` or CORS.
+
+**Deferred:** letting a Google-only account set a password; unlinking a Google account; extending
+login rate limiting (roadmap item 1) to cover the new endpoint.
+
 ## 2026-09-12 — iOS home-screen install (PWA, `apps/web`)
 
 `apps/web` is now installable to an iPhone home screen via Safari's "Add to Home Screen" (no

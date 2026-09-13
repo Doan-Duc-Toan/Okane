@@ -30,7 +30,7 @@ is set, which is a production concern once the web app and API are on different 
 
 | Module | Owns |
 |---|---|
-| `auth` | Register/login, JWT access (15m) + rotating hashed refresh (30d), guards |
+| `auth` | Register/login **or Google Sign-In**, JWT access (15m) + rotating hashed refresh (30d), guards |
 | `users` | User profile (locale, theme preference) |
 | `goals` | Goal CRUD, cross-currency progress math (remaining amount in both currencies, suggested monthly amount) |
 | `savings-entries` | Logging contributions against a goal; freezes the FX rate at log time |
@@ -41,6 +41,16 @@ is set, which is a production concern once the web app and API are on different 
 
 Every route requires a valid access token by default (`APP_GUARD` binds `JwtAuthGuard`
 globally) — a new controller is protected the moment it exists, not opt-in per route.
+
+**Two ways into the same session.** `POST /api/auth/login` (password) and `POST /api/auth/google`
+(Google Identity Services ID token, verified server-side against `GOOGLE_CLIENT_ID` via
+`google-auth-library`) both terminate in the same `TokenService.issuePair` and return the same
+session shape — the rest of the app, and the frontend's `auth-context.tsx`, never distinguish how a
+session started. `User.passwordHash` is nullable (a Google-only account has none); a verified Google
+email matching an existing password account links to it rather than creating a duplicate.
+The frontend loads Google's own script (`accounts.google.com/gsi/client`) to render the button —
+when CSP lands (roadmap item 2), `script-src`/`connect-src`/`frame-src` must allowlist
+`https://accounts.google.com` or the button silently breaks.
 
 ### The `RATE_PROVIDER` seam
 
@@ -120,5 +130,5 @@ Manual journey QA covers the rest for this MVP — no Playwright/browser E2E yet
 
 ## Deliberately deferred (see `docs/development-roadmap.md` for order)
 
-Login rate limiting, CSP/security headers, Google OAuth, alert delivery (email/push),
+Login rate limiting, CSP/security headers, alert delivery (email/push),
 data export, recurring reminders, native mobile, deployment.

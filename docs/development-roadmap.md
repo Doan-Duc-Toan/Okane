@@ -22,12 +22,15 @@ deliberate look before any public launch.
 
 1. **Login rate limiting** (`@nestjs/throttler`, ~10 attempts/min/IP) — the first
    hardening item before any public exposure; explicitly deferred out of the MVP plan.
-2. **Deployment + CSP/security headers** (`helmet`) — no host chosen yet; the CSP policy
-   depends on the final origins and font sources, so it's bundled with this step rather
-   than done speculatively now.
-3. **Google OAuth** — the login screen already renders a disabled Google button; wiring
-   it up needs a Google Cloud project and real credentials, which is the user's own
-   account setup, not a code task.
+   Now that `/api/auth/google` exists, it needs the same throttling as `/api/auth/login` —
+   an unauthenticated endpoint doing RSA verification per call is a plausible DoS surface.
+2. **Deployment + CSP/security headers** (`helmet`) — host is now chosen (Vercel + Render +
+   Supabase, see `docs/deployment.md`); when CSP lands, `script-src`/`connect-src`/`frame-src`
+   must allowlist `https://accounts.google.com` or the Google button silently breaks.
+3. ~~**Google OAuth**~~ — **done**, see `plans/260913-2152-google-oauth-login/`. ID-token
+   flow via Google Identity Services; verified-email accounts auto-link to an existing
+   password account. Follow-ups deliberately deferred: letting a Google-only account set
+   a password, and unlinking a Google account.
 4. **Rate-alert delivery** (email/push) — alerts currently only change state in-app
    (checked once a day by the same cron that snapshots the rate); there's no
    notification channel yet.
