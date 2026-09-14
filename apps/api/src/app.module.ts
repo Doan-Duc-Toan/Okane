@@ -6,6 +6,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { AuthModule } from './auth/auth.module.js';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard.js';
+import { BudgetModule } from './budget/budget.module.js';
 import { DecimalSerializerInterceptor } from './common/decimal.serializer.interceptor.js';
 import { validate } from './config/env.validation.js';
 import { ExchangeRateModule } from './exchange-rate/exchange-rate.module.js';
@@ -30,6 +31,7 @@ import { UsersModule } from './users/users.module.js';
     GoalsModule,
     SavingsEntriesModule,
     ExchangeRateModule,
+    BudgetModule,
   ],
   controllers: [AppController],
   providers: [

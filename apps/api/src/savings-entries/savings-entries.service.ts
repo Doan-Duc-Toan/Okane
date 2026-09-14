@@ -10,6 +10,7 @@ import { RATE_PROVIDER, type RateProvider } from '../common/rate-provider.interf
 import { convertAmount } from '../common/currency-conversion.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { CreateEntryDto } from './dto/create-entry.dto.js';
+import type { CreateSplitDto } from './dto/create-split.dto.js';
 import type { UpdateEntryDto } from './dto/update-entry.dto.js';
 
 const DEFAULT_PAGE_SIZE = 50;
@@ -50,6 +51,76 @@ export class SavingsEntriesService {
         note: dto.note,
       },
     });
+  }
+
+  /**
+   * Creates one SavingsEntry per allocation as a single atomic write — either
+   * every entry lands or none does. All validation (ownership, duplicates,
+   * amounts, the shared fx rate) happens before the transaction opens, per
+   * phase-04's frozen data flow.
+   */
+  async createSplit(userId: string, dto: CreateSplitDto) {
+    const entryDate = parseEntryDate(dto.entryDate);
+
+    const goalIds = dto.allocations.map((allocation) => allocation.goalId);
+    if (new Set(goalIds).size !== goalIds.length) {
+      throw new BadRequestException('splitDuplicateGoal');
+    }
+
+    const amounts = dto.allocations.map((allocation) => new Decimal(allocation.amount));
+    if (amounts.some((amount) => !amount.greaterThan(0))) {
+      throw new BadRequestException('splitAmountInvalid');
+    }
+
+    // Single ownership-scoped query — a foreign or nonexistent goalId simply
+    // doesn't come back, and the length mismatch below catches it.
+    const goals = await this.prisma.goal.findMany({ where: { id: { in: goalIds }, userId } });
+    if (goals.length !== goalIds.length) {
+      throw new NotFoundException('goalNotFound');
+    }
+    const goalById = new Map(goals.map((goal) => [goal.id, goal]));
+
+    // One rate fetch for the whole split, only if some allocation actually
+    // needs conversion — every cross-currency entry then shares one
+    // fxRateUsed, and a mid-split rate refresh can't split the difference.
+    const needsRate = dto.allocations.some(
+      (allocation) => allocation.currency !== goalById.get(allocation.goalId)!.currency,
+    );
+    let sharedRate: Decimal | undefined;
+    if (needsRate) {
+      const rate = await this.rateProvider.getLatestRate();
+      if (!rate) {
+        // Never write an unconverted amount into a different currency's
+        // total — see freeze()'s equivalent guard on the single-entry path.
+        throw new ServiceUnavailableException('rateUnavailable');
+      }
+      sharedRate = rate;
+    }
+
+    const datas = await Promise.all(
+      dto.allocations.map(async (allocation, index) => {
+        const goal = goalById.get(allocation.goalId)!;
+        const { amountInGoalCurrency, fxRateUsed } = await this.freeze(
+          amounts[index],
+          allocation.currency,
+          goal.currency,
+          sharedRate,
+        );
+
+        return {
+          userId,
+          goalId: allocation.goalId,
+          amount: allocation.amount,
+          currency: allocation.currency,
+          amountInGoalCurrency,
+          fxRateUsed,
+          entryDate,
+          note: dto.note,
+        };
+      }),
+    );
+
+    return this.prisma.$transaction(datas.map((data) => this.prisma.savingsEntry.create({ data })));
   }
 
   async listForGoal(
@@ -115,17 +186,23 @@ export class SavingsEntriesService {
     if (result.count === 0) throw new NotFoundException('entryNotFound');
   }
 
-  /** Resolves amountInGoalCurrency + fxRateUsed for a (possibly cross-currency) amount. */
+  /**
+   * Resolves amountInGoalCurrency + fxRateUsed for a (possibly cross-currency)
+   * amount. `prefetchedRate` lets createSplit share one rate fetch across an
+   * entire split instead of fetching once per allocation; create()/update()
+   * never pass it, so their behavior is unchanged.
+   */
   private async freeze(
     amount: Decimal,
     entryCurrency: 'JPY' | 'VND',
     goalCurrency: 'JPY' | 'VND',
+    prefetchedRate?: Decimal,
   ): Promise<{ amountInGoalCurrency: Decimal; fxRateUsed: Decimal | null }> {
     if (entryCurrency === goalCurrency) {
       return { amountInGoalCurrency: amount, fxRateUsed: null };
     }
 
-    const rate = await this.rateProvider.getLatestRate();
+    const rate = prefetchedRate ?? (await this.rateProvider.getLatestRate());
     if (!rate) {
       // Never write an unconverted amount into a different currency's total
       // — that would corrupt the goal by a factor of ~168 (JPY/VND ratio).

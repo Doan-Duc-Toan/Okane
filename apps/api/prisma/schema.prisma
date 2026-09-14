@@ -47,6 +47,7 @@ model User {
   goals         Goal[]
   savingsEntries SavingsEntry[]
   rateAlerts    RateAlert[]
+  budgetSettings BudgetSettings?
 }
 
 model RefreshToken {
@@ -75,6 +76,19 @@ model Goal {
   savingsEntries SavingsEntry[]
 
   @@index([userId])
+}
+
+model BudgetSettings {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  monthlyIncome Decimal  @db.Decimal(18, 2)
+  expenseRent   Decimal  @default(0) @db.Decimal(18, 2)
+  expenseFood   Decimal  @default(0) @db.Decimal(18, 2)
+  expenseOther  Decimal  @default(0) @db.Decimal(18, 2)
+  currency      Currency
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model SavingsEntry {

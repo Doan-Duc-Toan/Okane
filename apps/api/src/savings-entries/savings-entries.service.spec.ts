@@ -1,4 +1,4 @@
-import { ServiceUnavailableException } from '@nestjs/common';
+import { BadRequestException, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { Decimal } from '@prisma/client/runtime/library';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { RateProvider } from '../common/rate-provider.interface.js';
@@ -33,7 +33,14 @@ class FakePrisma {
       const goal = this.goals.get(where.id);
       return goal && goal.userId === where.userId ? goal : null;
     },
+    findMany: async ({ where }: { where: { id: { in: string[] }; userId: string } }) => {
+      return [...this.goals.values()].filter(
+        (goal) => where.id.in.includes(goal.id) && goal.userId === where.userId,
+      );
+    },
   };
+
+  $transaction = async <T>(operations: Promise<T>[]): Promise<T[]> => Promise.all(operations);
 
   savingsEntry = {
     create: async ({ data }: { data: Omit<FakeEntry, 'id'> }) => {
@@ -176,5 +183,83 @@ describe('SavingsEntriesService', () => {
     await service.update('user-1', entry.id, { amount: '50000.00' });
 
     expect(prisma.entries.get(entry.id)?.amountInGoalCurrency.toString()).toBe('50000');
+  });
+
+  describe('createSplit', () => {
+    it('rejects a duplicate goalId and writes nothing', async () => {
+      const { service, prisma } = buildService(RATE);
+      prisma.goals.set('goal-1', { id: 'goal-1', userId: 'user-1', currency: 'JPY' });
+
+      await expect(
+        service.createSplit('user-1', {
+          entryDate: '2026-09-01',
+          allocations: [
+            { goalId: 'goal-1', amount: '10000.00', currency: 'JPY' },
+            { goalId: 'goal-1', amount: '5000.00', currency: 'JPY' },
+          ],
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.entries.size).toBe(0);
+    });
+
+    it('rejects a goalId owned by another user (404) and writes nothing', async () => {
+      const { service, prisma } = buildService(RATE);
+      prisma.goals.set('goal-1', { id: 'goal-1', userId: 'user-1', currency: 'JPY' });
+      prisma.goals.set('goal-2', { id: 'goal-2', userId: 'someone-else', currency: 'JPY' });
+
+      await expect(
+        service.createSplit('user-1', {
+          entryDate: '2026-09-01',
+          allocations: [
+            { goalId: 'goal-1', amount: '10000.00', currency: 'JPY' },
+            { goalId: 'goal-2', amount: '5000.00', currency: 'JPY' },
+          ],
+        }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(prisma.entries.size).toBe(0);
+    });
+
+    it('freezes each allocation against its own goal currency, sharing one fxRateUsed', async () => {
+      const { service, prisma } = buildService(RATE);
+      prisma.goals.set('jpy-goal-1', { id: 'jpy-goal-1', userId: 'user-1', currency: 'JPY' });
+      prisma.goals.set('jpy-goal-2', { id: 'jpy-goal-2', userId: 'user-1', currency: 'JPY' });
+      prisma.goals.set('vnd-goal', { id: 'vnd-goal', userId: 'user-1', currency: 'VND' });
+
+      const entries = await service.createSplit('user-1', {
+        entryDate: '2026-09-01',
+        allocations: [
+          { goalId: 'jpy-goal-1', amount: '10000.00', currency: 'JPY' },
+          { goalId: 'jpy-goal-2', amount: '20000.00', currency: 'JPY' },
+          { goalId: 'vnd-goal', amount: '30000.00', currency: 'JPY' },
+        ],
+      });
+
+      expect(entries).toHaveLength(3);
+      expect(prisma.entries.size).toBe(3);
+      const [jpy1, jpy2, vnd] = entries;
+      expect(jpy1.fxRateUsed).toBeNull();
+      expect(jpy2.fxRateUsed).toBeNull();
+      expect(vnd.fxRateUsed?.toString()).toBe(RATE.toString());
+      expect(vnd.amountInGoalCurrency.toString()).toBe(
+        new Decimal('30000.00').times(RATE).toDecimalPlaces(2).toString(),
+      );
+    });
+
+    it('rejects the whole split when a cross-currency rate is unavailable, writing nothing', async () => {
+      const { service, prisma } = buildService(null);
+      prisma.goals.set('jpy-goal', { id: 'jpy-goal', userId: 'user-1', currency: 'JPY' });
+      prisma.goals.set('vnd-goal', { id: 'vnd-goal', userId: 'user-1', currency: 'VND' });
+
+      await expect(
+        service.createSplit('user-1', {
+          entryDate: '2026-09-01',
+          allocations: [
+            { goalId: 'jpy-goal', amount: '10000.00', currency: 'JPY' },
+            { goalId: 'vnd-goal', amount: '20000.00', currency: 'JPY' },
+          ],
+        }),
+      ).rejects.toBeInstanceOf(ServiceUnavailableException);
+      expect(prisma.entries.size).toBe(0);
+    });
   });
 });
