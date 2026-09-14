@@ -20,6 +20,10 @@ the plan directory. Every service touching a user-owned table must follow it.
   project-wide convention; do not reinterpret it in local time anywhere.
 - `RateAlert` — user-scoped threshold alert, evaluated once daily against the
   snapshot cron. Crossing-only semantics (see Phase 5).
+- `BudgetSettings` — one row per user, containing monthly income and fixed
+  expenses (rent, food, other). Allows the API to compute per-goal allocation
+  suggestions; suggestions themselves are **computed on read, never stored**.
+  Unique constraint on `userId` enforces one-per-user.
 
 Money fields are `Decimal(18,2)` (amounts) or `Decimal(20,8)` (FX rates), never
 `Float`. Prisma's `Decimal` does not survive `JSON.stringify` as a number — it

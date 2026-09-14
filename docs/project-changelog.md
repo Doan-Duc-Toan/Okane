@@ -1,5 +1,68 @@
 # Project Changelog
 
+## 2026-09-14 — Budget allocation & savings splits
+
+Monthly income/expenses configuration with per-goal allocation suggestions, and split
+entry creation for allocating a single deposit across multiple goals. See
+`plans/260914-1446-budget-allocation/`.
+
+**Added — backend (`apps/api`)**
+- `GET /api/budget` — retrieves user's budget settings (monthly income, fixed expenses)
+  or `{ configured: false }` if none exist yet.
+- `PUT /api/budget` — upserts budget settings (monthly income, rent/food/other expenses,
+  currency). Returns updated settings with fixed-scale Decimal strings (`"400000.00"`).
+- `GET /api/budget/available` — computes available monthly pool after fixed expenses,
+  assigns per-goal monthly allocations (unequal distribution when total goals exceed
+  available), handles cross-currency goals, and degrades gracefully when FX rate is
+  unavailable (returns `rateUnavailable: true` instead of 503). Allocation suggestions are
+  computed on read, never stored.
+- `POST /api/entries/split` — creates 2–20 savings entries atomically (all-or-nothing via
+  Prisma transaction), one per goal. Each entry freezes the shared FX rate at write time.
+  Throws `503 rateUnavailable` if cross-currency allocations exist and rate is missing
+  (write-never-proceeds-unconverted invariant).
+- `BudgetSettings` table (one row per user, unique on `userId`), with `monthlyIncome`,
+  `expenseRent`, `expenseFood`, `expenseOther`, `currency`, `updatedAt`.
+- Per-user data isolation proven by e2e suite: cross-user `GET /budget`,
+  `GET /budget/available`, and split attempts all return 404.
+
+**Added — frontend (`apps/web`)**
+- `/budget` settings page: income + rent/food/other, reusing `AmountInput` (no new money
+  widget).
+- Dashboard available-balance card, four states: unconfigured (an invitation, not an
+  error), rate-unavailable (shows the income/expense half with an explanatory line),
+  positive balance (hero number + per-goal breakdown + excluded list with a human reason:
+  no deadline / overdue / already complete), and shortfall (adds the server's own
+  nearest-deadline-first allocation suggestion, kept in server order — never re-sorted
+  client-side).
+- `/split` screen: log one lump sum across several goals in one submit, with a live "left
+  to allocate" figure. "Apply" on a suggestion only navigates here with the amounts
+  pre-filled via router state — nothing is written until the user reviews and submits;
+  `/split` also works as a plain, empty entry point on its own.
+- A successful split invalidates the dashboard, budget-available, and per-goal query
+  caches, so goal cards and the available number update without a manual reload.
+- `useAuthSuccess`'s sibling pattern extended: `useBudgetMutations`/`useSplitMutation`
+  follow this repo's existing mutation-hook shape (see `use-login.ts`).
+- VI/JA strings for every new surface (settings form, card, allocation list, split
+  screen), plus the seven new `apiError.*` keys the backend introduces.
+
+**Added — tests**
+- `apps/api/test/budget.e2e-spec.ts` — 13 cases covering GET/PUT settings, available
+  computation, cross-currency conversion, empty/unconfigured states, validation (negative
+  income, bad currency, extra fields), and missing-token 401s.
+- `apps/api/test/entries-split.e2e-spec.ts` — 11 cases covering atomic split creation,
+  rate sharing across allocations, money-scale string assertions, error paths (empty/too
+  many/duplicate goals, future dates, non-positive amounts), and atomicity row-count
+  checks on write failures.
+- `apps/api/test/data-isolation.e2e-spec.ts` — 4 new cases: cross-user budget settings
+  never leak, PUT creates per-user rows, GET /budget/available counts only the user's
+  goals, and splits to a foreign goal fail with 404 and zero rows written.
+- `available-balance-state.spec.ts` / `split-summary.spec.ts` (`apps/web`) — the two
+  pieces of new frontend logic with real branching (card-state resolution, left-to-allocate
+  arithmetic), including the boundary cases (`available: "0"`, `shortfall: "0"`).
+
+**Not yet deployed** — Render/Vercel production smoke test pending (migrations applied on
+deploy, `GET /api/budget` returns `{ configured: false }` for new users).
+
 ## 2026-09-13 — Sign in with Google
 
 A second login method alongside email/password, live on `https://okane-web.vercel.app`. See

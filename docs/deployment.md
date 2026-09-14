@@ -12,6 +12,10 @@
 
 ## Environment Variables
 
+**Note on 2026-09-14 budget allocation feature:** no new environment variables required.
+The feature is pure application logic without third-party service integration; it uses the
+existing `RATE_PROVIDER` seam for cross-currency math.
+
 **Render (`okane-api`)** — set in the Render dashboard, not committed (`render.yaml` marks these `sync: false`):
 - `DATABASE_URL` — Supabase session pooler connection string (`aws-0-ap-northeast-1.pooler.supabase.com:5432`, **not** the direct-connection host — that one is IPv6-only and unreachable from most networks/hosts without an IPv6 route)
 - `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` — random 32-byte hex strings, generated once with `openssl rand -hex 32`

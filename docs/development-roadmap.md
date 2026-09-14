@@ -1,5 +1,12 @@
 # Development Roadmap
 
+## Post-MVP Features — done (2026-09-14)
+
+**Budget allocation & savings splits** — monthly income/expenses with per-goal allocation
+suggestions, and split-entry creation (allocate one deposit across multiple goals), full
+end-to-end including the `/budget` settings page, the dashboard's available-balance card,
+and the `/split` screen. See `plans/260914-1446-budget-allocation/`.
+
 ## MVP — done (2026-09-10)
 
 All 10 phases of `plans/260910-1521-okane-react-nestjs-mvp/plan.md` complete: auth,

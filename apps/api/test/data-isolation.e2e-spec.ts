@@ -141,4 +141,121 @@ describe('Data isolation (e2e)', () => {
       .set('Authorization', `Bearer ${tokenA}`)
       .expect(200);
   });
+
+  // Budget/split isolation cases (Phase 6)
+  it("B's GET /budget never returns A's settings", async () => {
+    // A sets budget
+    const setRes = await request(app.getHttpServer())
+      .put('/api/budget')
+      .set('Authorization', `Bearer ${tokenA}`)
+      .send({
+        monthlyIncome: '500000.00',
+        expenseRent: '100000.00',
+        expenseFood: '50000.00',
+        expenseOther: '25000.00',
+        currency: 'VND',
+      })
+      .expect(200);
+    expect(setRes.body.configured).toBe(true);
+
+    // B's GET /budget should return configured:false, never A's settings
+    const bRes = await request(app.getHttpServer())
+      .get('/api/budget')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .expect(200);
+    expect(bRes.body.configured).toBe(false);
+    expect(bRes.body.settings).toBeNull();
+  });
+
+  it("B's PUT /budget creates B's own row; A's row remains unchanged", async () => {
+    // Verify A's settings from prior test still exist
+    const aRes1 = await request(app.getHttpServer())
+      .get('/api/budget')
+      .set('Authorization', `Bearer ${tokenA}`)
+      .expect(200);
+    const aInitialIncome = aRes1.body.settings.monthlyIncome;
+
+    // B sets budget
+    const bRes = await request(app.getHttpServer())
+      .put('/api/budget')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({
+        monthlyIncome: '300000.00',
+        expenseRent: '80000.00',
+        expenseFood: '40000.00',
+        expenseOther: '20000.00',
+        currency: 'VND',
+      })
+      .expect(200);
+    expect(bRes.body.settings.monthlyIncome).toBe('300000.00');
+
+    // A's budget should be unchanged
+    const aRes2 = await request(app.getHttpServer())
+      .get('/api/budget')
+      .set('Authorization', `Bearer ${tokenA}`)
+      .expect(200);
+    expect(aRes2.body.settings.monthlyIncome).toBe(aInitialIncome);
+  });
+
+  it("B's GET /budget/available counts only B's goals", async () => {
+    // A creates a goal
+    const aGoalRes = await request(app.getHttpServer())
+      .post('/api/goals')
+      .set('Authorization', `Bearer ${tokenA}`)
+      .send({ name: "A's additional goal", targetAmount: '1000000.00', currency: 'VND', deadline: '2027-12-31' })
+      .expect(201);
+
+    // B sets budget first
+    await request(app.getHttpServer())
+      .put('/api/budget')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({
+        monthlyIncome: '300000.00',
+        expenseRent: '80000.00',
+        expenseFood: '40000.00',
+        expenseOther: '20000.00',
+        currency: 'VND',
+      })
+      .expect(200);
+
+    // B creates a goal
+    const bGoalRes = await request(app.getHttpServer())
+      .post('/api/goals')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ name: "B's goal", targetAmount: '500000.00', currency: 'VND', deadline: '2027-12-31' })
+      .expect(201);
+
+    // B's /budget/available should only count B's goal
+    const bRes = await request(app.getHttpServer())
+      .get('/api/budget/available')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .expect(200);
+    expect(bRes.body.configured).toBe(true);
+    const counted = bRes.body.counted || [];
+    expect(counted.some((g: { goalId: string }) => g.goalId === aGoalRes.body.id)).toBe(false);
+    expect(counted.some((g: { goalId: string }) => g.goalId === bGoalRes.body.id)).toBe(true);
+  });
+
+  it("B splitting into A's goal returns 404", async () => {
+    // Get B's user ID
+    const bUser = await prisma.user.findFirst({ where: { email: userB.email } });
+
+    // Count before
+    const countBefore = await prisma.savingsEntry.count({ where: { userId: bUser!.id } });
+
+    // B tries to split into A's goal
+    const res = await request(app.getHttpServer())
+      .post('/api/entries/split')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({
+        entryDate: new Date().toISOString().slice(0, 10),
+        allocations: [{ goalId: goalIdA, amount: '100000.00', currency: 'VND' }],
+      })
+      .expect(404);
+    expect(res.body.message).toContain('goalNotFound');
+
+    // Verify no entries were written for B
+    const countAfter = await prisma.savingsEntry.count({ where: { userId: bUser!.id } });
+    expect(countAfter).toBe(countBefore);
+  });
 });

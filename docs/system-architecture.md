@@ -34,6 +34,7 @@ is set, which is a production concern once the web app and API are on different 
 | `users` | User profile (locale, theme preference) |
 | `goals` | Goal CRUD, cross-currency progress math (remaining amount in both currencies, suggested monthly amount) |
 | `savings-entries` | Logging contributions against a goal; freezes the FX rate at log time |
+| `budget` | Monthly income and fixed expenses (rent, food, other); computes per-goal allocation suggestions when goals exist. One-way dependency on `GoalsModule`, never the reverse (avoids a cycle with `DashboardService`). |
 | `exchange-rate` | Live-rate proxy, daily snapshot cron, history query, converter, user-scoped rate alerts |
 | `common` | Cross-cutting: `RATE_PROVIDER` seam (see below), the global Decimal→string response interceptor, the Prisma error filter |
 | `prisma` | The Prisma client wrapped as a Nest provider |
@@ -54,14 +55,21 @@ when CSP lands (roadmap item 2), `script-src`/`connect-src`/`frame-src` must all
 
 ### The `RATE_PROVIDER` seam
 
-`goals` and `savings-entries` need the live FX rate for cross-currency math, but the
+`goals`, `savings-entries`, and `budget` need the live FX rate for cross-currency math, but the
 module that actually owns fetching/caching that rate (`exchange-rate`) was built in
-parallel by a different work-track and didn't exist yet when `goals` was designed. Both
-sides depend only on a small interface (`getLatestRate()`), bound in one file
-(`common/rate-provider.module.ts`). `goals`/`savings-entries` were built and tested
+parallel by a different work-track and didn't exist yet when `goals` was designed. All
+consumers depend only on a small interface (`getLatestRate()`), bound in one file
+(`common/rate-provider.module.ts`). `goals`/`savings-entries`/`budget` were built and tested
 against a stub implementing that interface; `exchange-rate`'s `ExchangeRateService`
 implements the same interface for real and is wired in by swapping one binding — no
 consumer code changed when the real implementation landed.
+
+**Rate availability: read-degrades vs write-throws.** `GET /api/budget/available` returns
+`{ configured: true, rateUnavailable: true, ... }` when the rate is absent (a graceful
+degradation that lets budget view render with a degraded allocation estimate). By contrast,
+`POST /api/entries/split` with cross-currency allocations throws `503 rateUnavailable` if
+the rate is missing — a write never proceeds with an unconverted amount frozen into the
+database.
 
 ## Why the FX rate is cached in our own table, not a live API call per request
 
@@ -84,7 +92,7 @@ snapshot attempts landing in the same window) is a logged no-op, not a crash.
 | Directory | Owns |
 |---|---|
 | `app/` | Router table (`routes.tsx`) and route-guard components (`ProtectedRoute`, `PublicOnlyRoute`) |
-| `features/{auth,goals,exchange}/` | Screen-level pages, feature-scoped API clients/hooks, feature-local components |
+| `features/{auth,goals,exchange,budget}/` | Screen-level pages, feature-scoped API clients/hooks, feature-local components |
 | `components/{layout,ui}/` | Cross-feature shell (`AppShell`, persistent rate ticker) and shared primitives (inputs, the ledger-row list pattern, select) |
 | `contexts/` | `auth-context` (in-memory access token + localStorage refresh token, single-flight silent refresh), `theme-context` (light/dark/system, persisted) |
 | `i18n/` | `react-i18next` setup + `locales/{vi,ja}.json` — every user-facing string ships bilingual from the start, not backfilled later |
