@@ -7,7 +7,7 @@
 - `docs/data-model.md` — why `amountInGoalCurrency`/`fxRateUsed` must never be recomputed later
 
 ## Overview
-- **Priority:** P2 · **Status:** pending · **Effort:** 1h · **Blocked by:** nothing — runs in parallel with 1–3
+- **Priority:** P2 · **Status:** DONE · **Effort:** 1h · **Blocked by:** nothing — runs in parallel with 1–3
 - One endpoint that turns "I have 500,000 JPY to put away" into one `SavingsEntry` per goal, each
   with its own correctly frozen `amountInGoalCurrency`.
 
@@ -106,14 +106,14 @@ same `SavingsEntriesService`, so no visibility change and no new seam is introdu
 5. `pnpm --filter @okane/api test && build && lint`.
 
 ## Todo List
-- [ ] `CreateSplitDto` with nested validation and i18n-key messages
-- [ ] `createSplit` validates everything *before* the first write
-- [ ] Single `findMany` for ownership, count-checked → `goalNotFound`
-- [ ] Single rate fetch, shared `fxRateUsed` across the split
-- [ ] `prisma.$transaction([...])` — atomic
-- [ ] `create()` left byte-identical
-- [ ] `@Post('split')` route ordering safe
-- [ ] Unit cases added
+- [x] `CreateSplitDto` with nested validation and i18n-key messages
+- [x] `createSplit` validates everything *before* the first write
+- [x] Single `findMany` for ownership, count-checked → `goalNotFound`
+- [x] Single rate fetch, shared `fxRateUsed` across the split
+- [x] `prisma.$transaction([...])` — atomic
+- [x] `create()` left byte-identical
+- [x] `@Post('split')` route ordering safe
+- [x] Unit cases added
 
 ## Success Criteria
 A split of 3 allocations across 2 JPY goals and 1 VND goal, from a JPY-denominated request, creates

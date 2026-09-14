@@ -1,7 +1,7 @@
 ---
 title: "Available balance + goal allocation"
 description: "Declare a monthly income and a few fixed expenses, see what's left after every goal's monthly ask, and split a lump sum across goals in one action."
-status: pending
+status: complete
 work_type: feature
 priority: P2
 effort: 9h
@@ -54,12 +54,12 @@ See [phase-03](phase-03-backend-budget-endpoints.md) and [phase-04](phase-04-bac
 
 | # | Phase | Status | Effort | File |
 |---|-------|--------|--------|------|
-| 1 | Prisma: `BudgetSettings` table + additive migration | pending | 0.5h | [phase-01-prisma-budget-settings.md](phase-01-prisma-budget-settings.md) |
-| 2 | Pure `BudgetMathService` + unit tests (no Prisma, no HTTP) | pending | 1.5h | [phase-02-budget-math-module.md](phase-02-budget-math-module.md) |
-| 3 | Backend: budget module, DTOs, `GET/PUT /budget`, `GET /budget/available` | pending | 1.5h | [phase-03-backend-budget-endpoints.md](phase-03-backend-budget-endpoints.md) |
-| 4 | Backend: multi-goal split — `POST /entries/split` | pending | 1h | [phase-04-backend-multi-goal-split.md](phase-04-backend-multi-goal-split.md) |
-| 5 | Frontend: settings form, dashboard card, split flow, VI/JA | pending | 3h | [phase-05-frontend-budget-and-split.md](phase-05-frontend-budget-and-split.md) |
-| 6 | E2E tests, docs, production migration verification | pending | 1.5h | [phase-06-tests-docs-rollout.md](phase-06-tests-docs-rollout.md) |
+| 1 | Prisma: `BudgetSettings` table + additive migration | complete | 0.5h | [phase-01-prisma-budget-settings.md](phase-01-prisma-budget-settings.md) |
+| 2 | Pure `BudgetMathService` + unit tests (no Prisma, no HTTP) | complete | 1.5h | [phase-02-budget-math-module.md](phase-02-budget-math-module.md) |
+| 3 | Backend: budget module, DTOs, `GET/PUT /budget`, `GET /budget/available` | complete | 1.5h | [phase-03-backend-budget-endpoints.md](phase-03-backend-budget-endpoints.md) |
+| 4 | Backend: multi-goal split — `POST /entries/split` | complete | 1h | [phase-04-backend-multi-goal-split.md](phase-04-backend-multi-goal-split.md) |
+| 5 | Frontend: settings form, dashboard card, split flow, VI/JA | complete | 3h | [phase-05-frontend-budget-and-split.md](phase-05-frontend-budget-and-split.md) |
+| 6 | E2E tests, docs, production migration verification | complete | 1.5h | [phase-06-tests-docs-rollout.md](phase-06-tests-docs-rollout.md) |
 
 ## Key dependencies
 
@@ -130,6 +130,19 @@ including a visible "not counted" list for the deadline-less goal. When the goal
 is available, a suggested split appears; pressing *Apply* lands on the split screen pre-filled, and
 submitting creates one `SavingsEntry` per goal with each goal's own frozen `amountInGoalCurrency`.
 Zero English prose in any new error response; every new string exists in both `vi.json` and `ja.json`.
+
+## Review & Final Verification
+
+Post-review corrections (commit 185cf33) are folded into the DONE status above, not a separate phase:
+- **High-severity bug fixed**: Goal completed after deadline was mislabeled `no_deadline` instead of
+  `completed` in the dashboard's excluded-goals list. Root cause bridged `GoalMathService` and
+  `BudgetMathService`. Fix verified with dedicated regression test (fails without fix, passes with it).
+- **Medium finding fixed**: `savings-entries.service.ts` exceeded the 200-line limit after split-endpoint
+  work. Resolved by extracting two pure helpers into `savings-entries.helpers.ts` (zero behavior change;
+  full suite re-run confirmed green).
+
+Final verified state: **74 api unit tests + 64 api e2e tests + 40 web unit tests all passing**; both
+api and web builds clean; no lint regressions.
 
 ## Next steps after delivery
 Changelog entry, `docs/data-model.md` gains the `BudgetSettings` row, `docs/system-architecture.md`

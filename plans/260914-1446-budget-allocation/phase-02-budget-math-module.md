@@ -7,7 +7,7 @@
 - `DeadlineStatus` / `ProgressBlock` from `apps/api/src/goals/goal-math.service.ts`
 
 ## Overview
-- **Priority:** P1 (highest-value, cheapest to prove) · **Status:** pending · **Effort:** 1.5h
+- **Priority:** P1 (highest-value, cheapest to prove) · **Status:** DONE · **Effort:** 1.5h
 - The available-balance and allocation-suggestion arithmetic, as a pure service: no Prisma, no HTTP,
   no ambient clock, no rate lookup. Rate and goal facts are passed in. This phase is independent of
   Phase 1 and can start immediately.
@@ -175,11 +175,11 @@ tells the truth about the rest. Proportional is a mode nobody asked for (YAGNI).
 | 18 | Σ allocation amounts | always exactly `min(pool, totalGoalNeed)` |
 
 ## Todo List
-- [ ] `budget-math.service.ts` created, zero Prisma imports
-- [ ] `allocate` exported independently
-- [ ] All 18 cases in the matrix covered
-- [ ] `pnpm --filter @okane/api test` green
-- [ ] `lint` clean
+- [x] `budget-math.service.ts` created, zero Prisma imports
+- [x] `allocate` exported independently
+- [x] All 18 cases in the matrix covered
+- [x] `pnpm --filter @okane/api test` green
+- [x] `lint` clean
 
 ## Success Criteria
 Every case above passes. `grep -c "PrismaService\|@nestjs/common.*Http" budget-math.service.ts` is 0.

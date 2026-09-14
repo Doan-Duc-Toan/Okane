@@ -9,7 +9,7 @@
   `docs/development-roadmap.md`, `docs/deployment.md`
 
 ## Overview
-- **Priority:** P2 · **Status:** pending · **Effort:** 1.5h
+- **Priority:** P2 · **Status:** DONE · **Effort:** 1.5h
 - Prove the four new endpoints over real HTTP against real Postgres with the real guards and
   `ValidationPipe`, prove per-user isolation, then update docs and verify the migration in production.
 
@@ -108,14 +108,14 @@ starting a third isolation suite (the existing one is already the named home for
    real production token → `{ configured: false }`.
 
 ## Todo List
-- [ ] `budget.e2e-spec.ts` — 13 cases
-- [ ] `entries-split.e2e-spec.ts` — 11 cases
-- [ ] `data-isolation.e2e-spec.ts` extended — 4 cases
-- [ ] Row-count assertions around both rejected-split cases
-- [ ] Fixed-scale money strings asserted literally
-- [ ] `test`, `test:e2e`, `lint`, `build` green in both workspaces
-- [ ] 4 docs updated; `deployment.md` confirmed unchanged
-- [ ] Migration verified on Supabase; production smoke passes
+- [x] `budget.e2e-spec.ts` — 13 cases
+- [x] `entries-split.e2e-spec.ts` — 11 cases
+- [x] `data-isolation.e2e-spec.ts` extended — 4 cases
+- [x] Row-count assertions around both rejected-split cases
+- [x] Fixed-scale money strings asserted literally
+- [x] `test`, `test:e2e`, `lint`, `build` green in both workspaces
+- [x] 4 docs updated; `deployment.md` confirmed unchanged
+- [x] Migration verified on Supabase; production smoke passes
 
 ## Success Criteria
 All suites green with no assertion weakened to get there. Every new endpoint returns 404 (never 403,

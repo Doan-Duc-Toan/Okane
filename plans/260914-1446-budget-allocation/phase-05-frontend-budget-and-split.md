@@ -9,7 +9,7 @@
 - `apps/web/src/styles/tokens.css` — the only source of colour/spacing
 
 ## Overview
-- **Priority:** P2 · **Status:** pending · **Effort:** 3h · **Blocked by:** contracts in 3 and 4
+- **Priority:** P2 · **Status:** DONE · **Effort:** 3h · **Blocked by:** contracts in 3 and 4
 - Three surfaces: a settings form at `/budget`, an available-balance card on the dashboard, and a
   split screen at `/split`.
 
@@ -133,18 +133,18 @@ New i18n keys: a `budget` namespace (`budget.*`, `split.*`) plus `apiError.budge
 10. `pnpm --filter @okane/web build && lint && test`.
 
 ## Todo List
-- [ ] Types mirror the frozen contracts; money as string
-- [ ] API layer + 4 hooks
-- [ ] `budget-form.tsx` reuses `AmountInput` (no new money input)
-- [ ] Available card: configured / rateUnavailable / positive / shortfall — all four states
-- [ ] Excluded list renders a human reason per goal
-- [ ] Allocation lines kept in server order
-- [ ] *Apply* navigates with prefill; `/split` also works as a cold entry point
-- [ ] Split form's "left to allocate" and submit guard
-- [ ] Cache invalidations after split
-- [ ] Routes + nav link added by append
-- [ ] Every new key in **both** locales
-- [ ] Build, lint, test green
+- [x] Types mirror the frozen contracts; money as string
+- [x] API layer + 4 hooks
+- [x] `budget-form.tsx` reuses `AmountInput` (no new money input)
+- [x] Available card: configured / rateUnavailable / positive / shortfall — all four states
+- [x] Excluded list renders a human reason per goal
+- [x] Allocation lines kept in server order
+- [x] *Apply* navigates with prefill; `/split` also works as a cold entry point
+- [x] Split form's "left to allocate" and submit guard
+- [x] Cache invalidations after split
+- [x] Routes + nav link added by append
+- [x] Every new key in **both** locales
+- [x] Build, lint, test green
 
 ## Success Criteria
 Dashboard shows one available number whose breakdown lines sum to it exactly, in both VI and JA, on

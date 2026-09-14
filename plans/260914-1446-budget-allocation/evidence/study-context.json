@@ -1,0 +1,35 @@
+{
+  "task": "Available-balance budgeting: monthly income/fixed-expenses settings, per-goal allocation suggestions across active goals, and a multi-goal lump-sum split action",
+  "mode": "interactive",
+  "acceptanceCriteria": [
+    "User can set/edit monthly income and fixed expenses (rent, food, other) via GET/PUT /api/budget",
+    "GET /api/budget/available computes income - fixed expenses - sum(active goals' monthly need), converting cross-currency goal needs individually into one budget currency",
+    "Deadline-less, overdue-without-suggestion, and completed goals are excluded with a correct human-readable reason (no_deadline/overdue/completed)",
+    "When shortfall > 0, a nearest-deadline-first allocation suggestion is returned in server order",
+    "A missing FX rate degrades GET /budget/available to rateUnavailable:true (200), but makes POST /entries/split throw 503 rather than write an unconverted amount",
+    "POST /api/entries/split creates one SavingsEntry per goal atomically (all-or-nothing), sharing one FX rate fetch across the whole split",
+    "Frontend: /budget settings form, dashboard available-balance card (4 states), /split screen; Apply only navigates with prefill, never mutates until the user submits",
+    "Every new error is a stable i18n key with matching vi/ja translations; every new endpoint is userId-scoped with cross-user access returning 404"
+  ],
+  "touchpoints": [
+    "apps/api/prisma/schema.prisma (BudgetSettings model)",
+    "apps/api/src/budget/** (new module)",
+    "apps/api/src/savings-entries/** (createSplit, savings-entries.helpers.ts)",
+    "apps/web/src/features/budget/** (new feature)",
+    "apps/web/src/features/goals/{split-page.tsx,components/split-form.tsx,hooks/use-split-mutation.ts}",
+    "apps/web/src/app/routes.tsx, apps/web/src/components/layout/top-nav.tsx",
+    "apps/web/src/i18n/locales/{vi,ja}.json",
+    "apps/api/test/{budget,entries-split,data-isolation}.e2e-spec.ts",
+    "docs/{data-model,system-architecture,project-changelog,development-roadmap}.md"
+  ],
+  "blastRadius": [
+    "GoalsModule (BudgetModule depends on it one-way; GoalsModule itself unmodified)",
+    "SavingsEntriesService's existing single-goal create()/update() paths (freeze() extraction must not change their behavior)",
+    "Dashboard page (new card mounted above CurrencyTotals)",
+    "i18n key sets for both locales"
+  ],
+  "contracts": [
+    "GET/PUT /api/budget, GET /api/budget/available, POST /api/entries/split (all new, no existing endpoint's contract changed)",
+    "AuthResult/SavingsEntry response shapes unchanged for existing endpoints"
+  ]
+}

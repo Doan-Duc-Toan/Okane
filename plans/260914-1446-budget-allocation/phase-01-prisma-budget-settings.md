@@ -7,7 +7,7 @@
 - `docs/data-model.md` — rollback boundary
 
 ## Overview
-- **Priority:** P2 · **Status:** pending · **Effort:** 0.5h
+- **Priority:** P2 · **Status:** DONE · **Effort:** 0.5h
 - One new table holding a user's monthly income, three fixed-expense totals, and the currency they
   are all declared in. Nothing else in the schema changes.
 
@@ -74,11 +74,11 @@ Plus `budgetSettings BudgetSettings?` on `model User`.
 5. `pnpm --filter @okane/api build` to confirm the regenerated client type-checks.
 
 ## Todo List
-- [ ] `BudgetSettings` model added
-- [ ] `User.budgetSettings` back-relation added
-- [ ] Migration generated and its SQL read, not assumed
-- [ ] SQL contains no `DROP`/`ALTER COLUMN` against an existing table
-- [ ] API builds against the regenerated client
+- [x] `BudgetSettings` model added
+- [x] `User.budgetSettings` back-relation added
+- [x] Migration generated and its SQL read, not assumed
+- [x] SQL contains no `DROP`/`ALTER COLUMN` against an existing table
+- [x] API builds against the regenerated client
 
 ## Success Criteria
 `pnpm --filter @okane/api build` passes; `pnpm --filter @okane/api test:e2e` still passes untouched

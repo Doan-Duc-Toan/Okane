@@ -7,7 +7,7 @@
   `apps/api/src/users/users.controller.ts` (PATCH-me shape), `apps/api/src/users/dto/update-profile.dto.ts` (i18n-key messages)
 
 ## Overview
-- **Priority:** P2 · **Status:** pending · **Effort:** 1.5h · **Blocked by:** 1, 2
+- **Priority:** P2 · **Status:** DONE · **Effort:** 1.5h · **Blocked by:** 1, 2
 - A `BudgetModule` with three endpoints: read settings, write settings, read the computed block.
 
 ## Key Insights
@@ -129,14 +129,14 @@ New i18n error keys (must land in both `vi.json` and `ja.json` in [phase-05](pha
 6. `pnpm --filter @okane/api build && lint`. Manual smoke with `curl` + a real token.
 
 ## Todo List
-- [ ] `UpdateBudgetDto` with i18n-key messages only
-- [ ] `BudgetService` — all three methods, every query `userId`-scoped
-- [ ] `upsert` keyed on `userId` (not on a row id)
-- [ ] Controller with `@CurrentUser` on every handler, no id params
-- [ ] `BudgetModule` imports `GoalsModule` (one-way — verify no cycle at boot)
-- [ ] Registered in `app.module.ts`
-- [ ] Not-configured path returns 200, not 404
-- [ ] Build + lint clean
+- [x] `UpdateBudgetDto` with i18n-key messages only
+- [x] `BudgetService` — all three methods, every query `userId`-scoped
+- [x] `upsert` keyed on `userId` (not on a row id)
+- [x] Controller with `@CurrentUser` on every handler, no id params
+- [x] `BudgetModule` imports `GoalsModule` (one-way — verify no cycle at boot)
+- [x] Registered in `app.module.ts`
+- [x] Not-configured path returns 200, not 404
+- [x] Build + lint clean
 
 ## Success Criteria
 With a real token: `GET /api/budget` on a fresh user → `200 {configured:false}`; `PUT` → `200` with

@@ -1,0 +1,26 @@
+{
+  "score": 9,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "User can set/edit monthly income and fixed expenses (rent, food, other) via GET/PUT /api/budget",
+    "GET /api/budget/available computes income - fixed expenses - sum(active goals' monthly need), converting cross-currency goal needs individually into one budget currency",
+    "Deadline-less, overdue-without-suggestion, and completed goals are excluded with a correct human-readable reason (no_deadline/overdue/completed)",
+    "When shortfall > 0, a nearest-deadline-first allocation suggestion is returned in server order",
+    "A missing FX rate degrades GET /budget/available to rateUnavailable:true (200), but makes POST /entries/split throw 503 rather than write an unconverted amount",
+    "POST /api/entries/split creates one SavingsEntry per goal atomically (all-or-nothing), sharing one FX rate fetch across the whole split",
+    "Frontend: /budget settings form, dashboard available-balance card (4 states), /split screen; Apply only navigates with prefill, never mutates until the user submits",
+    "Every new error is a stable i18n key with matching vi/ja translations; every new endpoint is userId-scoped with cross-user access returning 404"
+  ],
+  "regressionChecked": [
+    "existing single-goal create()/update() savings-entry paths unchanged after freeze() extraction into savings-entries.helpers.ts (full pre-existing spec suite re-run green)",
+    "GoalsModule and DashboardService unaffected by BudgetModule's one-way dependency (no cycle at boot, confirmed via app start)",
+    "existing 73-test api unit suite and existing e2e suite both stayed green through every phase",
+    "web build/test suite unaffected by backend-only phases; frontend phase re-verified web build/test green after its own changes",
+    "cross-currency conversion invariant (individual per-goal conversion, never sum-then-convert) verified by manual trace of allocate() and computeAvailable(), not only by the existing unit tests"
+  ],
+  "contractStatus": "OK",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": []
+}

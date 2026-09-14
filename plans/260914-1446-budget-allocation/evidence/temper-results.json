@@ -1,0 +1,60 @@
+{
+  "commands": [
+    {
+      "command": "pnpm --filter api run test",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "74/74 unit tests passing (8 files) — includes 19 new BudgetMathService cases (18 original + 1 regression test for the completed-but-overdue exclusion-reason bug)",
+      "ts": "2026-09-14T07:14:03.000Z"
+    },
+    {
+      "command": "pnpm --filter api run test:e2e",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "64/64 e2e tests passing (8 files) — includes 15 budget.e2e-spec.ts + 11 entries-split.e2e-spec.ts + 4 new data-isolation cases",
+      "ts": "2026-09-14T07:14:07.000Z"
+    },
+    {
+      "command": "pnpm --filter api run build",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "nest build clean, no type errors",
+      "ts": "2026-09-14T07:14:03.000Z"
+    },
+    {
+      "command": "pnpm --filter api run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "oxlint clean; one pre-existing unrelated warning in savings-entries.service.spec.ts (unused var), not introduced by this feature",
+      "ts": "2026-09-14T07:14:15.000Z"
+    },
+    {
+      "command": "pnpm --filter web run build",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "vite build clean, PWA precache regenerated, no type errors",
+      "ts": "2026-09-14T07:14:21.000Z"
+    },
+    {
+      "command": "pnpm --filter web run test",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "40/40 unit tests passing (6 files) — includes 12 new (available-balance-state.spec.ts, split-summary.spec.ts)",
+      "ts": "2026-09-14T07:14:21.000Z"
+    },
+    {
+      "command": "manual smoke test via curl + browser (puppeteer) against live local API+Postgres+web",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "registered a throwaway account, set budget (300000 income / 170000 JPY expenses), created 2 goals forcing a shortfall, confirmed all 4 dashboard-card states, Apply->prefilled split form->submit->dashboard/goal cards updated without reload; test account deleted afterward",
+      "ts": "2026-09-14T06:47:00.000Z"
+    },
+    {
+      "command": "regression check: temporarily removed the completed-goal-exclusion-reason fix in budget-math.service.ts, re-ran pnpm --filter api run test, confirmed 1 test failed, restored the fix, re-ran, confirmed 74/74 passed again",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "confirmed the new test 5b is load-bearing, not just present",
+      "ts": "2026-09-14T07:11:00.000Z"
+    }
+  ]
+}

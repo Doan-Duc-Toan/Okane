@@ -46,7 +46,7 @@ entry creation for allocating a single deposit across multiple goals. See
   screen), plus the seven new `apiError.*` keys the backend introduces.
 
 **Added — tests**
-- `apps/api/test/budget.e2e-spec.ts` — 13 cases covering GET/PUT settings, available
+- `apps/api/test/budget.e2e-spec.ts` — 15 cases covering GET/PUT settings, available
   computation, cross-currency conversion, empty/unconfigured states, validation (negative
   income, bad currency, extra fields), and missing-token 401s.
 - `apps/api/test/entries-split.e2e-spec.ts` — 11 cases covering atomic split creation,
@@ -59,6 +59,16 @@ entry creation for allocating a single deposit across multiple goals. See
 - `available-balance-state.spec.ts` / `split-summary.spec.ts` (`apps/web`) — the two
   pieces of new frontend logic with real branching (card-state resolution, left-to-allocate
   arithmetic), including the boundary cases (`available: "0"`, `shortfall: "0"`).
+
+**Fixed post-review**
+- A goal completed after its own deadline had already lapsed was mislabeled `no_deadline`
+  in the dashboard's excluded-goal list instead of `completed` — `goal-math.service.ts`'s
+  deadline math returns a null `suggestedMonthlyAmount` for any past deadline regardless of
+  completion, a pairing `BudgetMathService.computeAvailable`'s exclusion branch didn't check
+  for first. Available/shortfall totals were unaffected (the goal was excluded either way);
+  only the human-readable reason shown to the user was wrong. Fixed by checking
+  `deadlineStatus === 'completed'` before the null-amount branch, with a regression test
+  reproducing the real producer's output shape.
 
 **Not yet deployed** — Render/Vercel production smoke test pending (migrations applied on
 deploy, `GET /api/budget` returns `{ configured: false }` for new users).
