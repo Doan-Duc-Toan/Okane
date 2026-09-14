@@ -1,0 +1,60 @@
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
+  align-items: start;
+}
+
+/* Mirrors entry-form.module.css's breakpoint: below this width the currency
+   select (sized by its widest option) squeezes the amount field too much. */
+@media (max-width: 480px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.leftToAllocate,
+.overAllocated {
+  margin: -0.5rem 0 var(--space-field-stack);
+  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.leftToAllocate {
+  color: var(--color-ink-soft);
+}
+
+.overAllocated {
+  color: var(--color-alert);
+}
+
+.goalRows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.hint {
+  margin: -0.25rem 0 0.5rem;
+  font-size: var(--text-xs);
+  color: var(--color-ink-faint);
+}
+
+.error {
+  color: var(--color-alert);
+  font-size: var(--text-sm);
+  margin: 0 0 var(--space-field-stack);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}

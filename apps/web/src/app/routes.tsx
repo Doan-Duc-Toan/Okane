@@ -4,9 +4,11 @@ import { AppShell } from '@/components/layout/app-shell'
 import { Spinner } from '@/components/ui/spinner'
 import { LoginPage } from '@/features/auth/login-page'
 import { RegisterPage } from '@/features/auth/register-page'
+import { BudgetSettingsPage } from '@/features/budget/budget-settings-page'
 import { DashboardPage } from '@/features/goals/dashboard-page'
 import { GoalDetailPage } from '@/features/goals/goal-detail-page'
 import { NewGoalPage } from '@/features/goals/new-goal-page'
+import { SplitPage } from '@/features/goals/split-page'
 import { NotFoundPage } from './not-found-page'
 import { ProtectedRoute } from './protected-route'
 import { PublicOnlyRoute } from './public-only-route'
@@ -40,6 +42,9 @@ export const router = createBrowserRouter([
           { path: '/', element: <DashboardPage /> },
           { path: '/goals/new', element: <NewGoalPage /> },
           { path: '/goals/:id', element: <GoalDetailPage /> },
+          // budget routes (Phase 5)
+          { path: '/budget', element: <BudgetSettingsPage /> },
+          { path: '/split', element: <SplitPage /> },
           // exchange routes (Phase 9)
           {
             path: '/exchange',

@@ -29,6 +29,7 @@
   },
   "nav": {
     "dashboard": "ダッシュボード",
+    "budget": "予算",
     "goal": "目標",
     "exchange": "為替・換算",
     "newGoal": "目標を作成",
@@ -173,6 +174,60 @@
       "amountInvalid": "金額は0より大きい値を入力してください"
     }
   },
+  "budget": {
+    "pageTitle": "予算設定",
+    "pageHint": "毎月の収入と固定費を入力すると、Okaneが貯金目標に実際に使える金額を計算します。",
+    "form": {
+      "income": "毎月の収入",
+      "expenseRent": "家賃",
+      "expenseFood": "食費",
+      "expenseOther": "その他の支出",
+      "currency": "予算の通貨",
+      "submit": "設定を保存",
+      "error": {
+        "incomeInvalid": "収入は0より大きい値を入力してください",
+        "expenseInvalid": "支出はマイナスにできません"
+      }
+    },
+    "card": {
+      "title": "利用可能残高",
+      "availableLabel": "目標に使える金額",
+      "shortfallLabel": "不足額",
+      "formulaHint": "＝ 収入 − 固定費 − 今月の目標必要額",
+      "promptTitle": "予算が未設定です",
+      "promptBody": "収入と固定費を設定すると、毎月目標に使える金額を確認できます。",
+      "promptCta": "予算を設定",
+      "rateUnavailableNote": "本日のレートが未取得のため、外貨建て目標の必要額を正確に計算できません。",
+      "fixedExpensesLabel": "固定費の合計",
+      "countedTitle": "予算に含まれる目標",
+      "countedEmpty": "予算に含まれる目標はまだありません。",
+      "excludedTitle": "対象外の目標",
+      "excludedReason": {
+        "no_deadline": "期限が未設定",
+        "overdue": "期限超過",
+        "completed": "達成済み"
+      },
+      "convertedFrom": "元の金額：<money></money>"
+    },
+    "allocation": {
+      "title": "配分の提案",
+      "explain": "これはあくまで提案であり、このページを表示するたびに再計算されます。配分画面で送信するまで何も保存されません。",
+      "emptyList": "配分の提案はありません。",
+      "coveredFully": "今月の必要額を満たします",
+      "apply": "適用"
+    }
+  },
+  "split": {
+    "pageTitle": "貯金の配分",
+    "hint": "目標を選び、今回記録したい金額を入力してください。",
+    "total": "配分する合計金額",
+    "leftToAllocate": "残りの配分可能額",
+    "rowAmountLabel": "{{name}}への金額",
+    "submit": "これらの記録を追加",
+    "hintNoRows": "続けるには少なくとも1つの目標に金額を入力してください。",
+    "noGoalsTitle": "まだ目標がありません",
+    "noGoalsBody": "配分する前に目標を作成してください。"
+  },
   "smiles": {
     "outboundUrl": "https://www.smileswallet.com/japan/vi/"
   },
@@ -215,7 +270,14 @@
     "googleTokenInvalid": "Googleの認証情報が無効です。もう一度お試しください。",
     "googleEmailUnverified": "このGoogleアカウントのメールアドレスは確認されていないため使用できません。",
     "googleNotConfigured": "Googleログインは現在ご利用いただけません。",
-    "credentialRequired": "Googleログインのリクエストが正しくありません。"
+    "credentialRequired": "Googleログインのリクエストが正しくありません。",
+    "budgetIncomeInvalid": "毎月の収入が正しくありません",
+    "budgetExpenseInvalid": "支出の金額が正しくありません",
+    "budgetCurrencyInvalid": "予算の通貨が正しくありません",
+    "splitAllocationsEmpty": "少なくとも1件の配分が必要です",
+    "splitAllocationsTooMany": "一度に配分できるのは最大20件までです",
+    "splitDuplicateGoal": "同じ目標を複数回指定することはできません",
+    "splitAmountInvalid": "配分する金額は0より大きい値を入力してください"
   },
   "update": {
     "available": "新しいバージョンがあります",

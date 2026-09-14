@@ -1,0 +1,24 @@
+.card {
+  max-width: 32rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-heading);
+}
+
+.hint {
+  margin: 0 0 0.25rem;
+  color: var(--color-ink-soft);
+  font-size: var(--text-sm);
+}
+
+.error {
+  margin: 0;
+  color: var(--color-alert);
+  font-size: var(--text-sm);
+}

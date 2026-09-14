@@ -5,6 +5,7 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { ErrorState } from '@/components/ui/error-state'
 import { LedgerList } from '@/components/ui/ledger-list'
 import { Spinner } from '@/components/ui/spinner'
+import { AvailableBalanceCard } from '@/features/budget/components/available-balance-card'
 import { CurrencyTotals } from './components/currency-totals'
 import { GoalCard } from './components/goal-card'
 import { RecentActivity } from './components/recent-activity'
@@ -22,6 +23,7 @@ export function DashboardPage() {
 
       {data && (
         <>
+          <AvailableBalanceCard />
           <CurrencyTotals totals={data.totals} />
 
           <section className={styles.section}>

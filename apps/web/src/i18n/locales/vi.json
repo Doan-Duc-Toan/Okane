@@ -29,6 +29,7 @@
   },
   "nav": {
     "dashboard": "Tổng quan",
+    "budget": "Ngân sách",
     "goal": "Mục tiêu",
     "exchange": "Tỷ giá & Quy đổi",
     "newGoal": "Tạo mục tiêu",
@@ -173,6 +174,60 @@
       "amountInvalid": "Số tiền phải lớn hơn 0"
     }
   },
+  "budget": {
+    "pageTitle": "Thiết lập ngân sách",
+    "pageHint": "Nhập thu nhập và các khoản chi cố định hàng tháng để Okane tính số dư bạn thực sự có thể dùng cho các mục tiêu tiết kiệm.",
+    "form": {
+      "income": "Thu nhập hàng tháng",
+      "expenseRent": "Tiền thuê nhà",
+      "expenseFood": "Tiền ăn",
+      "expenseOther": "Chi phí khác",
+      "currency": "Loại tiền ngân sách",
+      "submit": "Lưu thiết lập",
+      "error": {
+        "incomeInvalid": "Thu nhập phải lớn hơn 0",
+        "expenseInvalid": "Chi phí không được là số âm"
+      }
+    },
+    "card": {
+      "title": "Số dư khả dụng",
+      "availableLabel": "Có thể dùng cho mục tiêu",
+      "shortfallLabel": "Đang thiếu",
+      "formulaHint": "= Thu nhập − Chi phí cố định − Nhu cầu các mục tiêu trong tháng",
+      "promptTitle": "Chưa thiết lập ngân sách",
+      "promptBody": "Thiết lập thu nhập và chi phí cố định để xem số tiền bạn thực sự có thể dành cho các mục tiêu mỗi tháng.",
+      "promptCta": "Thiết lập ngân sách",
+      "rateUnavailableNote": "Chưa có tỷ giá hôm nay nên chưa thể tính chính xác nhu cầu của các mục tiêu bằng ngoại tệ.",
+      "fixedExpensesLabel": "Tổng chi phí cố định",
+      "countedTitle": "Được tính vào ngân sách",
+      "countedEmpty": "Chưa có mục tiêu nào được tính vào ngân sách.",
+      "excludedTitle": "Không được tính",
+      "excludedReason": {
+        "no_deadline": "Chưa đặt hạn chót",
+        "overdue": "Đã quá hạn",
+        "completed": "Đã hoàn thành"
+      },
+      "convertedFrom": "Nguyên bản: <money></money>"
+    },
+    "allocation": {
+      "title": "Gợi ý phân bổ",
+      "explain": "Đây chỉ là gợi ý, được tính lại mỗi lần bạn xem trang này. Chưa có gì được lưu cho đến khi bạn xác nhận ở màn hình phân bổ.",
+      "emptyList": "Không có gợi ý phân bổ nào.",
+      "coveredFully": "Đủ nhu cầu tháng này",
+      "apply": "Áp dụng"
+    }
+  },
+  "split": {
+    "pageTitle": "Phân bổ khoản tiết kiệm",
+    "hint": "Chọn từng mục tiêu và nhập số tiền bạn muốn ghi cho mục tiêu đó trong lần này.",
+    "total": "Tổng số tiền cần phân bổ",
+    "leftToAllocate": "Còn lại chưa phân bổ",
+    "rowAmountLabel": "Số tiền cho {{name}}",
+    "submit": "Ghi các khoản này",
+    "hintNoRows": "Nhập số tiền cho ít nhất một mục tiêu để tiếp tục.",
+    "noGoalsTitle": "Chưa có mục tiêu nào",
+    "noGoalsBody": "Tạo một mục tiêu trước khi phân bổ khoản tiết kiệm."
+  },
   "smiles": {
     "outboundUrl": "https://www.smileswallet.com/japan/vi/"
   },
@@ -215,7 +270,14 @@
     "googleTokenInvalid": "Đăng nhập Google không hợp lệ. Vui lòng thử lại.",
     "googleEmailUnverified": "Email Google này chưa được xác minh nên không thể dùng để đăng nhập.",
     "googleNotConfigured": "Đăng nhập Google hiện chưa khả dụng.",
-    "credentialRequired": "Yêu cầu đăng nhập Google không hợp lệ."
+    "credentialRequired": "Yêu cầu đăng nhập Google không hợp lệ.",
+    "budgetIncomeInvalid": "Thu nhập hàng tháng không hợp lệ",
+    "budgetExpenseInvalid": "Chi phí không hợp lệ",
+    "budgetCurrencyInvalid": "Loại tiền ngân sách không hợp lệ",
+    "splitAllocationsEmpty": "Cần ít nhất một khoản phân bổ",
+    "splitAllocationsTooMany": "Chỉ được phân bổ tối đa 20 khoản mỗi lần",
+    "splitDuplicateGoal": "Mỗi mục tiêu chỉ được xuất hiện một lần trong danh sách phân bổ",
+    "splitAmountInvalid": "Số tiền phân bổ phải lớn hơn 0"
   },
   "update": {
     "available": "Đã có phiên bản mới",

@@ -1,0 +1,84 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+}
+
+.heroLabel {
+  font-size: var(--text-sm);
+  color: var(--color-ink-soft);
+}
+
+.heroPositive,
+.heroNegative {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-2xl);
+  font-weight: 700;
+}
+
+.heroPositive {
+  color: var(--color-positive);
+}
+
+.heroNegative {
+  color: var(--color-alert);
+}
+
+.formula {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-ink-faint);
+}
+
+.line {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.muted {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-ink-faint);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-ink-soft);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.rowAmount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.subLine {
+  font-size: var(--text-xs);
+  color: var(--color-ink-faint);
+  font-family: var(--font-body);
+}
