@@ -130,7 +130,7 @@ export function SplitForm({ goals, prefill }: SplitFormProps) {
         <Button variant="ghost" type="button" onClick={() => navigate('/')} disabled={splitMutation.isPending}>
           {t('common.cancel')}
         </Button>
-        <Button type="submit" disabled={splitMutation.isPending || dateInFuture || !summary.canSubmit}>
+        <Button type="submit" isLoading={splitMutation.isPending} disabled={dateInFuture || !summary.canSubmit}>
           {t('split.submit')}
         </Button>
       </div>

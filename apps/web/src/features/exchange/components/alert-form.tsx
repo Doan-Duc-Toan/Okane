@@ -88,7 +88,7 @@ export function AlertForm({ currentRate, onCancel, onCreated }: AlertFormProps) 
         <Button type="button" variant="ghost" onClick={onCancel} disabled={createAlert.isPending}>
           {t('common.cancel')}
         </Button>
-        <Button type="submit" disabled={createAlert.isPending || threshold === ''}>
+        <Button type="submit" isLoading={createAlert.isPending} disabled={threshold === ''}>
           {t('common.save')}
         </Button>
       </div>

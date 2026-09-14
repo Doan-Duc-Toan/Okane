@@ -133,7 +133,7 @@ export function EntryForm({ goalId, goalCurrency, progress }: EntryFormProps) {
           {error}
         </p>
       )}
-      <Button type="submit" disabled={createEntry.isPending || dateInFuture}>
+      <Button type="submit" isLoading={createEntry.isPending} disabled={dateInFuture}>
         {t('goal.addEntry')}
       </Button>
     </form>

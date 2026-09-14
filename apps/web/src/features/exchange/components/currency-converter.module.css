@@ -21,6 +21,11 @@
 }
 
 .swap {
+  /* .row > * gives every direct child flex:1 by default — override so the
+     icon takes only its own content width and sits centered between the two
+     equal-width inputs, instead of stretching into a 1/3 share of the row
+     with its glyph left-aligned inside that extra space. */
+  flex: 0 0 auto;
   padding-bottom: 0.9rem;
   color: var(--color-ink-faint);
   font-size: var(--text-lg);

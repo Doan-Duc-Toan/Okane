@@ -117,7 +117,7 @@ export function GoalForm({ mode, initialValues, submitting, onSubmit, onCancel }
         <Button variant="ghost" type="button" onClick={onCancel} disabled={submitting}>
           {t('common.cancel')}
         </Button>
-        <Button type="submit" disabled={submitting}>
+        <Button type="submit" isLoading={submitting}>
           {mode === 'create' ? t('newGoal.submit') : t('newGoal.saveChanges')}
         </Button>
       </div>

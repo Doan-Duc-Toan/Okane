@@ -101,7 +101,7 @@ export function BudgetForm({ initialValues, submitting, onSubmit }: BudgetFormPr
         <Button variant="ghost" type="button" onClick={() => navigate('/')} disabled={submitting}>
           {t('common.cancel')}
         </Button>
-        <Button type="submit" disabled={submitting}>
+        <Button type="submit" isLoading={submitting}>
           {t('budget.form.submit')}
         </Button>
       </div>

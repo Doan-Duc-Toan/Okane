@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 import { ApiError } from '@/lib/api-client'
 import { loadGoogleIdentity } from '@/lib/google-identity'
 import { useAuthSuccess } from '../hooks/use-auth-success'
@@ -83,5 +84,30 @@ export function GoogleButton({ redirectTo, onError }: GoogleButtonProps) {
     )
   }
 
-  return <div ref={containerRef} style={{ display: 'flex', justifyContent: 'center' }} />
+  return (
+    <div style={{ position: 'relative' }}>
+      {/* Always mounted, even while pending — conditionally unmounting this
+          would mean the init effect (keyed on clientId/language, not on
+          pending state) never re-runs renderButton into it afterward. */}
+      <div
+        ref={containerRef}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          visibility: googleLogin.isPending ? 'hidden' : 'visible',
+        }}
+      />
+      {/* Google's own rendered button (an iframe) can't show our spinner
+          inside it, and closing the account picker already took a few
+          seconds with no feedback of its own — so once we're verifying the
+          credential, overlay an explicit "signing in" state instead of
+          leaving the slot looking unresponsive for the length of our
+          request. */}
+      {googleLogin.isPending && (
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <Spinner label={t('login.signingIn')} />
+        </div>
+      )}
+    </div>
+  )
 }

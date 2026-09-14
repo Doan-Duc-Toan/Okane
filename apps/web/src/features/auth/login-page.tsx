@@ -109,7 +109,7 @@ export function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             error={passwordError ?? undefined}
           />
-          <Button type="submit" disabled={loginMutation.isPending} style={{ width: '100%' }}>
+          <Button type="submit" isLoading={loginMutation.isPending} style={{ width: '100%' }}>
             {t('login.submit')}
           </Button>
         </form>

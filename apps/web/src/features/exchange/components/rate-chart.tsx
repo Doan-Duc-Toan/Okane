@@ -68,7 +68,13 @@ export function RateChart({ history }: { history: HistoryResult }) {
             stroke={colors.grid}
             tick={{ fill: colors.tooltipText, fontSize: 12 }}
           />
-          <YAxis domain={['auto', 'auto']} stroke={colors.grid} tick={{ fill: colors.tooltipText, fontSize: 12 }} width={64} />
+          <YAxis
+            domain={['auto', 'auto']}
+            tickFormatter={(v: number) => formatRate(String(v), i18n.language)}
+            stroke={colors.grid}
+            tick={{ fill: colors.tooltipText, fontSize: 12 }}
+            width={64}
+          />
           <Tooltip
             contentStyle={{ background: colors.tooltipBg, border: `1px solid ${colors.grid}`, color: colors.tooltipText }}
             labelFormatter={(d) => formatDate(String(d ?? ''), i18n.language)}

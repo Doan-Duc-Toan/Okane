@@ -133,7 +133,7 @@ export function RegisterPage() {
           onChange={(e) => setConfirmPassword(e.target.value)}
           error={confirmError ?? undefined}
         />
-        <Button type="submit" disabled={registerMutation.isPending} style={{ width: '100%' }}>
+        <Button type="submit" isLoading={registerMutation.isPending} style={{ width: '100%' }}>
           {t('register.submit')}
         </Button>
       </form>
