@@ -1,17 +1,11 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  NotFoundException,
-  ServiceUnavailableException,
-} from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { Decimal } from '@prisma/client/runtime/library';
 import { RATE_PROVIDER, type RateProvider } from '../common/rate-provider.interface.js';
-import { convertAmount } from '../common/currency-conversion.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { CreateEntryDto } from './dto/create-entry.dto.js';
 import type { CreateSplitDto } from './dto/create-split.dto.js';
 import type { UpdateEntryDto } from './dto/update-entry.dto.js';
+import { freezeEntryAmount, parseEntryDate, validateSplitAllocations } from './savings-entries.helpers.js';
 
 const DEFAULT_PAGE_SIZE = 50;
 
@@ -37,7 +31,12 @@ export class SavingsEntriesService {
       throw new BadRequestException('entryAmountInvalid');
     }
 
-    const { amountInGoalCurrency, fxRateUsed } = await this.freeze(amount, dto.currency, goal.currency);
+    const { amountInGoalCurrency, fxRateUsed } = await freezeEntryAmount(
+      this.rateProvider,
+      amount,
+      dto.currency,
+      goal.currency,
+    );
 
     return this.prisma.savingsEntry.create({
       data: {
@@ -61,16 +60,8 @@ export class SavingsEntriesService {
    */
   async createSplit(userId: string, dto: CreateSplitDto) {
     const entryDate = parseEntryDate(dto.entryDate);
-
+    const amounts = validateSplitAllocations(dto.allocations);
     const goalIds = dto.allocations.map((allocation) => allocation.goalId);
-    if (new Set(goalIds).size !== goalIds.length) {
-      throw new BadRequestException('splitDuplicateGoal');
-    }
-
-    const amounts = dto.allocations.map((allocation) => new Decimal(allocation.amount));
-    if (amounts.some((amount) => !amount.greaterThan(0))) {
-      throw new BadRequestException('splitAmountInvalid');
-    }
 
     // Single ownership-scoped query — a foreign or nonexistent goalId simply
     // doesn't come back, and the length mismatch below catches it.
@@ -100,7 +91,8 @@ export class SavingsEntriesService {
     const datas = await Promise.all(
       dto.allocations.map(async (allocation, index) => {
         const goal = goalById.get(allocation.goalId)!;
-        const { amountInGoalCurrency, fxRateUsed } = await this.freeze(
+        const { amountInGoalCurrency, fxRateUsed } = await freezeEntryAmount(
+          this.rateProvider,
           amounts[index],
           allocation.currency,
           goal.currency,
@@ -163,7 +155,7 @@ export class SavingsEntriesService {
 
     const amountOrCurrencyChanged = dto.amount !== undefined || dto.currency !== undefined;
     const frozen = amountOrCurrencyChanged
-      ? await this.freeze(nextAmount, nextCurrency, entry.goal.currency)
+      ? await freezeEntryAmount(this.rateProvider, nextAmount, nextCurrency, entry.goal.currency)
       : undefined;
 
     const result = await this.prisma.savingsEntry.updateMany({
@@ -185,40 +177,4 @@ export class SavingsEntriesService {
     const result = await this.prisma.savingsEntry.deleteMany({ where: { id, userId } });
     if (result.count === 0) throw new NotFoundException('entryNotFound');
   }
-
-  /**
-   * Resolves amountInGoalCurrency + fxRateUsed for a (possibly cross-currency)
-   * amount. `prefetchedRate` lets createSplit share one rate fetch across an
-   * entire split instead of fetching once per allocation; create()/update()
-   * never pass it, so their behavior is unchanged.
-   */
-  private async freeze(
-    amount: Decimal,
-    entryCurrency: 'JPY' | 'VND',
-    goalCurrency: 'JPY' | 'VND',
-    prefetchedRate?: Decimal,
-  ): Promise<{ amountInGoalCurrency: Decimal; fxRateUsed: Decimal | null }> {
-    if (entryCurrency === goalCurrency) {
-      return { amountInGoalCurrency: amount, fxRateUsed: null };
-    }
-
-    const rate = prefetchedRate ?? (await this.rateProvider.getLatestRate());
-    if (!rate) {
-      // Never write an unconverted amount into a different currency's total
-      // — that would corrupt the goal by a factor of ~168 (JPY/VND ratio).
-      throw new ServiceUnavailableException('No exchange rate available yet — try again shortly');
-    }
-
-    return { amountInGoalCurrency: convertAmount(amount, entryCurrency, rate), fxRateUsed: rate };
-  }
-}
-
-function parseEntryDate(entryDate: string): Date {
-  const date = new Date(entryDate);
-  const todayUtc = Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate());
-  const entryUtc = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
-  if (entryUtc > todayUtc) {
-    throw new BadRequestException('entryDateFuture');
-  }
-  return date;
 }

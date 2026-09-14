@@ -94,6 +94,15 @@ export class BudgetMathService {
     const excluded: ExcludedGoalLine[] = [];
 
     for (const goal of goals) {
+      // Checked before the null/zero branches below: a goal completed after its
+      // own deadline passed gets suggestedMonthlyAmount: null from GoalMathService
+      // (computeMonthsRemaining returns null for any past deadline, regardless of
+      // completion), which would otherwise fall into the 'no_deadline'/'overdue'
+      // branch and mislabel a finished goal as still pending.
+      if (goal.deadlineStatus === 'completed') {
+        excluded.push({ goalId: goal.goalId, name: goal.name, reason: 'completed' });
+        continue;
+      }
       if (goal.suggestedMonthlyAmount === null) {
         const reason = goal.deadlineStatus === 'overdue' ? 'overdue' : 'no_deadline';
         excluded.push({ goalId: goal.goalId, name: goal.name, reason });

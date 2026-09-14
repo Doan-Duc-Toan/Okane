@@ -383,7 +383,8 @@ describe('Entries split (e2e)', () => {
 
       expect(res.body.message).toContain('rateUnavailable');
 
-      // Count after should be unchanged (transaction rolled back)
+      // Count after should be unchanged — the rate check throws before the
+      // transaction is ever opened, so there's nothing to roll back.
       const countAfter = await prisma.savingsEntry.count({ where: { userId } });
       expect(countAfter).toBe(countBefore);
     });

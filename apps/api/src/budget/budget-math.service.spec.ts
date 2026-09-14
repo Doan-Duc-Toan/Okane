@@ -88,6 +88,19 @@ describe('BudgetMathService', () => {
     expect(result.totalGoalNeed?.toString()).toBe('0');
   });
 
+  it('5b. completed goal whose deadline already lapsed (real GoalMathService pairing: suggestedMonthlyAmount null, deadlineStatus completed) -> excluded reason completed, not no_deadline', () => {
+    // GoalMathService.computeMonthsRemaining returns null for ANY past deadline,
+    // regardless of completion, so a goal finished after its own deadline
+    // produces this exact { null, 'completed' } pairing — not the isZero()
+    // shape test 5 covers. Reproducing the real producer's output here (rather
+    // than only the isZero() case) is what catches the completed/no_deadline
+    // mislabel this fix addresses.
+    const result = service.computeAvailable(
+      base({ goals: [goal({ suggestedMonthlyAmount: null, deadlineStatus: 'completed' })] }),
+    );
+    expect(result.excluded).toEqual([{ goalId: 'goal-1', name: 'Goal', reason: 'completed' }]);
+  });
+
   it('6. all goals same currency as budget -> no conversion, not rateUnavailable', () => {
     const result = service.computeAvailable(
       base({
